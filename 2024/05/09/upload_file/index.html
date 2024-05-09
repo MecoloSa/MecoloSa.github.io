@@ -213,6 +213,10 @@
 
 <!-- toc -->
 
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
 <section class="px-6 max-w-prose mx-auto md:px-0">
   <!-- header -->
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
@@ -234,7 +238,7 @@
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
-            <span>183 words</span>
+            <span>201 words</span>
           </span>
           
         </section>
@@ -243,17 +247,19 @@
   </header>
   <!-- content -->
   <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
-    <p>总算部署到把静态本地blog部署到githubU网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的blog上去吧</p>
-<p>首先尝试第一种方法，先把更新的md文件pull到我的仓库里面去···</p>
+    <p>总算部署到把静态本地 blog 部署到 github 网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的 blog 上去吧</p>
+<p>首先尝试第一种方法，先把更新的 md 文件 pull 到我的仓库里面去···</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
 
-<p>虽然上传成功，看看效果，果然不行，还是需要调用hexo</p>
+<p>虽然上传成功，看看效果，果然不行，还是需要调用 hexo</p>
 <p>尝试 <code>hexo d</code> ，没有效果</p>
 <p>尝试</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
 
 <p>部署成功，不过问题出在第一次上传只更新到了“虽然上传成功”这一行，探究原因</p>
-<p><code>git d</code> 发现可以有效更新网页内容</p>
+<h2 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br><span class="line"></span><br><span class="line">hexo clean &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>等待几分钟即可</p>
 
   </article>
   <!-- tag -->
