@@ -19,7 +19,7 @@
 
 
 
-<title>First blog to document the its establishment. | Illias&#39; Blog</title>
+<title>Fist time to upload file to my blog. | Illias&#39; Blog</title>
 
 
 
@@ -158,7 +158,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        First blog to document the its establishment.
+        Fist time to upload file to my blog.
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -213,16 +213,12 @@
 
 <!-- toc -->
 
-  <!-- tocbot -->
-<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
-
-
 <section class="px-6 max-w-prose mx-auto md:px-0">
   <!-- header -->
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
     <div class="pt-4 md:pt-6">
       <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        First blog to document the its establishment.
+        Fist time to upload file to my blog.
       </h1>
       <div>
         <section class="flex items-center gap-3 text-sm">
@@ -238,7 +234,7 @@
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
-            <span>265 words</span>
+            <span>121 words</span>
           </span>
           
         </section>
@@ -247,26 +243,11 @@
   </header>
   <!-- content -->
   <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
-    <p>第一次pull文件到自己的库中，能不能成功呢···好想做一个自己的blog</p>
-<h3 id="——成功了！操作流程："><a href="#——成功了！操作流程：" class="headerlink" title="——成功了！操作流程："></a>——成功了！操作流程：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin  git@github.com:MecoloSa/MecoloSa.github.io.git</span><br></pre></td></tr></table></figure>
+    <p>总算部署到把静态本地blog部署到github网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的blog上去吧</p>
+<p>首先尝试第一种方法，先把更新的md文件pull到我的仓库里面去···</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
 
-<p>之后查看</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git remote -v</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (fetch)</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (push)</span><br></pre></td></tr></table></figure>
-
-<p>将readme.md放在文件夹后，执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>即可</p>
-<h3 id="出现问题：修改readme-md后无法提交"><a href="#出现问题：修改readme-md后无法提交" class="headerlink" title="出现问题：修改readme.md后无法提交"></a>出现问题：修改readme.md后无法提交</h3><p>按照GPT-4提示<code>git add -f README.md</code>也没有作用，提示</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
-
-<p>重启git后执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git status # 可以看到更改的信息</span><br><span class="line"># On branch master</span><br><span class="line"># Changes to be committed:</span><br><span class="line">#   (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">#         modified:   readme.md</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Update README.md&quot; # 可以看到上传过程</span><br><span class="line">[master 225f05e] Update README.md</span><br><span class="line"> 1 file changed, 13 insertions(+), 2 deletions(-)</span><br><span class="line"> </span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>最后还需要执行<code>git push origin master</code></p>
-<h3 id="此外，进行了初步博客配置探索"><a href="#此外，进行了初步博客配置探索" class="headerlink" title="此外，进行了初步博客配置探索"></a>此外，进行了初步博客配置探索</h3><p>执行命令为：</p>
-<p><code>C:\Users\PENG\Desktop\Illias_class\blog&gt;hexo server</code></p>
-<p>找到需要上传的md文件，后拉取到source文件夹，重复上述过程即可</p>
+<p>上传成功，看看效果，果然不行，还是需要调用hexo</p>
 
   </article>
   <!-- tag -->
@@ -277,13 +258,13 @@
   <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
     <div>
       
-        <a href="/2024/05/09/upload_file/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
-          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
-          Fist time to upload file to my blog.
-        </a>
-      
     </div>
     <div>
+      
+        <a href="/2024/05/09/first_attemp/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          First blog to document the its establishment.
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
       
     </div>
   </div>
