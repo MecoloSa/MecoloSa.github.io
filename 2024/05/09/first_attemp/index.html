@@ -238,7 +238,7 @@
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
-            <span>265 words</span>
+            <span>277 words</span>
           </span>
           
         </section>
@@ -247,13 +247,14 @@
   </header>
   <!-- content -->
   <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
-    <p>第一次pull文件到自己的库中，能不能成功呢···好想做一个自己的blog</p>
+    <p>第一次pull文件到自己的库中，能不能成功呢···</p>
+<p>好想做一个自己的 blog ，今天试试吧，先使用 hexo 初始化静态网站</p>
 <h3 id="——成功了！操作流程："><a href="#——成功了！操作流程：" class="headerlink" title="——成功了！操作流程："></a>——成功了！操作流程：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin  git@github.com:MecoloSa/MecoloSa.github.io.git</span><br></pre></td></tr></table></figure>
 
 <p>之后查看</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git remote -v</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (fetch)</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (push)</span><br></pre></td></tr></table></figure>
 
-<p>将readme.md放在文件夹后，执行</p>
+<p>将 readme.md 放在文件夹后，执行</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
 
 <p>即可</p>
@@ -261,12 +262,12 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
 
 <p>重启git后执行</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git status # 可以看到更改的信息</span><br><span class="line"># On branch master</span><br><span class="line"># Changes to be committed:</span><br><span class="line">#   (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">#         modified:   readme.md</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Update README.md&quot; # 可以看到上传过程</span><br><span class="line">[master 225f05e] Update README.md</span><br><span class="line"> 1 file changed, 13 insertions(+), 2 deletions(-)</span><br><span class="line"> </span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git status # 可以看到更改的信息</span><br><span class="line"># On branch master</span><br><span class="line"># Changes to be committed:</span><br><span class="line">#   (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">#         modified:   readme.md</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Update README.md&quot; # 可以看到上传过程</span><br><span class="line"># [master 225f05e] Update README.md</span><br><span class="line">#  1 file changed, 13 insertions(+), 2 deletions(-)</span><br><span class="line"> </span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
 
-<p>最后还需要执行<code>git push origin master</code></p>
 <h3 id="此外，进行了初步博客配置探索"><a href="#此外，进行了初步博客配置探索" class="headerlink" title="此外，进行了初步博客配置探索"></a>此外，进行了初步博客配置探索</h3><p>执行命令为：</p>
 <p><code>C:\Users\PENG\Desktop\Illias_class\blog&gt;hexo server</code></p>
-<p>找到需要上传的md文件，后拉取到source文件夹，重复上述过程即可</p>
+<p>找到需要上传的md文件，后拉取到source文件夹，重复上述过程即可…吗？</p>
+<p>参见下一个 blog</p>
 
   </article>
   <!-- tag -->
