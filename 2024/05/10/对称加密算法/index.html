@@ -260,22 +260,22 @@
 <h3 id="关键部分代码分析"><a href="#关键部分代码分析" class="headerlink" title="关键部分代码分析"></a>关键部分代码分析</h3><p>我们截取一个关键部分代码来进行理解（加密部分代码</p>
 <ol>
 <li><p>生成随机的初始向量 IV  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">iv = os.urandom(16)  # AES块大小为128位, 即16字节  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iv = os.urandom(16)  # AES块大小为128位, 即16字节  </span><br></pre></td></tr></table></figure>
 
 <p>- 作用: 初始向量（IV）用于AES的CBC模式，可以为相同的明文生成不同的密文。<br>- <code>os.urandom(16)</code>: 这个函数生成一个16字节的随机数，用作IV。AES的块大小是128位，即16字节。</p>
 </li>
 <li><p>创建加密对象  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  </span><br><span class="line">encryptor = cipher.encryptor()  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  </span><br><span class="line">encryptor = cipher.encryptor()  </span><br></pre></td></tr></table></figure>
 
 <p>- <code> Cipher</code>: 创建一个Cipher对象，这个对象参数包括加密算法、模式和后端。<br>- <code>algorithms.AES(key)</code>: 此处指明使用AES算法，并传入密钥<code>key</code>，其中<code>key</code>为按照 AES-256 要求随机生成的32位随机数。<br>- <code>modes.CBC(iv)</code>: 指定加密模式为CBC（Cipher Block Chaining），并传入向量IV。<br>- <code>backend=default_backend()</code>: 指定使用默认的加密后端。<br>- <code>cipher.encryptor()</code>: 从Cipher对象中创建一个加密器对象（我将它理解成一个承载 cipher 的对象，因为后续的加密都要基于这个对象格式），用于后续的数据加密。</p>
 </li>
 <li><p>填充数据以符合块大小要求  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">padder = padding.PKCS7(algorithms.AES.block_size).padder()  </span><br><span class="line">padded_data = padder.update(data) + padder.finalize()  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">padder = padding.PKCS7(algorithms.AES.block_size).padder()  </span><br><span class="line">padded_data = padder.update(data) + padder.finalize()  </span><br></pre></td></tr></table></figure>
 
 <p>- PKCS7填充: AES算法要求数据长度必须是块大小的整数倍。PKCS7是一种填充标准，用于在数据的末尾添加足够的填充字节。<br>- <code>padding.PKCS7(algorithms.AES.block_size)</code>: 创建一个PKCS7填充器，设置块大小为AES的块大小（128位）。<br>- 填充过程: <code>padder.update(data)</code>处理原始数据，添加部分填充；<code>padder.finalize()</code>完成填充过程，确保所有数据被正确填充。</p>
 </li>
 <li><p>加密数据  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">encrypted = encryptor.update(padded_data) + encryptor.finalize()  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">encrypted = encryptor.update(padded_data) + encryptor.finalize()  </span><br></pre></td></tr></table></figure>
 
 <p>- <code>encryptor.update(padded_data)</code>: 加密填充后的数据，包含以下流程：</p>
 <ol>
@@ -297,7 +297,7 @@
 <p>- <code>encryptor.finalize()</code>: 完成加密过程，确保所有数据块都被加密。</p>
 </li>
 <li><p>返回IV和加密的数据</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">return iv + encrypted  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return iv + encrypted  </span><br></pre></td></tr></table></figure>
 
 <p> - 最后，函数返回的是IV和加密后的数据的组合。在解密时，需要使用相同的IV和密钥才能正确解密数据。通过<strong>将IV附加到加密数据的前面</strong>，可以方便地在解密时提取和使用。</p>
 </li>
@@ -305,43 +305,43 @@
 <h3 id="详细函数解析"><a href="#详细函数解析" class="headerlink" title="详细函数解析"></a>详细函数解析</h3><h4 id="密码分组链接模式"><a href="#密码分组链接模式" class="headerlink" title="密码分组链接模式"></a>密码分组链接模式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br><span class="line">  name = &quot;CBC&quot;</span><br><span class="line">  def __init__(self, initialization_vector: bytes):</span><br><span class="line">     utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">     self._initialization_vector = initialization_vector</span><br><span class="line">  @property</span><br><span class="line">  def initialization_vector(self) -&gt; bytes:</span><br><span class="line">     return self._initialization_vector</span><br><span class="line">  validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
 
 <p><strong>类定义和继承</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class CBC(ModeWithInitializationVector):</span><br></pre></td></tr></table></figure>
 
 <p>这行代码定义了一个名为CBC的类，它继承自<code>ModeWithInitializationVector</code>，CBC类是一个加密模式，它需要一个初始化向量（IV）。</p>
 <p><strong>类属性</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">name = &quot;CBC&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;CBC&quot;</span><br></pre></td></tr></table></figure>
 
 <p>一个类级别的属性，用于标识该加密模式的名称为”CBC”。</p>
 <p><strong>构造器（init 方法）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def __init__(self, initialization_vector: bytes):</span><br><span class="line">    utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">    self._initialization_vector = initialization_vector</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, initialization_vector: bytes):</span><br><span class="line">    utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">    self._initialization_vector = initialization_vector</span><br></pre></td></tr></table></figure>
 
 <p>这个方法是类的构造器，它接受一个参数initialization_vector，用作CBC模式的初始向量。</p>
 <p><code>utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</code>：这行代码调用一个工具函数<code>check_byteslike</code>，检查<code>initialization_vector</code>是否是字节类型。这是为了确保类型安全，防止因类型错误而引发运行时错误。<br><code>self._initialization_vector = initialization_vector</code>：这行代码将传入的初始化向量保存在实例变量<code>_initialization_vector</code>中，以便于后续使用。</p>
 <p><strong>属性装饰器（@property）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">@property</span><br><span class="line">def initialization_vector(self) -&gt; bytes:</span><br><span class="line">    return self._initialization_vector</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def initialization_vector(self) -&gt; bytes:</span><br><span class="line">    return self._initialization_vector</span><br></pre></td></tr></table></figure>
 
 <p>装饰器@property将方法变成一个可读属性。此处定义的属性为initialization_vector，用于获取实例的私有变量<code>_initialization_vector</code>的值。这提供了一个安全的访问方式，外部代码可以通过属性访问IV值，而无法直接修改它，保持了数据的封装和安全性。</p>
 <p><strong>方法</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
 
 <p>将一个名为<code>_check_iv_and_key_length</code>的函数或方法赋值给类的<code>validate_for_algorithm</code>属性。<code>validate_for_algorithm</code>用于在某些操作前验证初始化向量和密钥长度的正确性。确保在加密操作开始前，初始化向量和密钥符合特定算法的要求。</p>
 <h4 id="AES-类"><a href="#AES-类" class="headerlink" title="AES 类"></a>AES 类</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br><span class="line">  name = &quot;AES&quot;</span><br><span class="line">  block_size = 128</span><br><span class="line">  \# 512 added to support AES-256-XTS, which uses 512-bit keys</span><br><span class="line">  key_sizes = frozenset([128, 192, 256, 512])</span><br><span class="line">  def __init__(self, key: bytes):</span><br><span class="line">     self.key = _verify_key_size(self, key)</span><br><span class="line">  @property</span><br><span class="line">  def key_size(self) -&gt; int:</span><br><span class="line">     return len(self.key) * 8</span><br></pre></td></tr></table></figure>
 
 <p><strong>类定义和继承</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class AES(BlockCipherAlgorithm):</span><br></pre></td></tr></table></figure>
 
 <p>定义了一个名为<code>AES</code>的类，它继承自<code>BlockCipherAlgorithm</code>。<code>BlockCipherAlgorithm</code>为块密码算法（如AES）提供一些基本功能或规范。</p>
 <p><strong>类属性</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">name = &quot;AES&quot;</span><br><span class="line">block_size = 128</span><br><span class="line">key_sizes = frozenset([128, 192, 256, 512])</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;AES&quot;</span><br><span class="line">block_size = 128</span><br><span class="line">key_sizes = frozenset([128, 192, 256, 512])</span><br></pre></td></tr></table></figure>
 
 <p><code>name = &quot;AES&quot;</code>：一个类级别的属性，用于表明该类实现的是AES算法。<br><code>block_size = 128</code>：表示AES算法使用的块大小是128位，是AES算法的标准块大小。<br><code>key_sizes = frozenset([128, 192, 256, 512])</code>：定义了有效的密钥大小（以位为单位）。AES标准支持128位、192位和256位密钥。额外的512位密钥大小说明可能是为了支持特定的AES变体或模式，如AES-256-XTS。</p>
 <p><strong>构造器（init 方法）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def __init__(self, key: bytes):</span><br><span class="line">    self.key = _verify_key_size(self, key)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, key: bytes):</span><br><span class="line">    self.key = _verify_key_size(self, key)</span><br></pre></td></tr></table></figure>
 
 <p>这个方法是类的构造器，它接受一个参数key，这个参数是一个字节序列，用作AES算法的密钥。</p>
 <p><code>_verify_key_size(self, key)</code>：这行代码调用了一个函数_verify_key_size，传入当前实例和密钥。用于验证密钥的大小是否符合在<code>key_sizes</code>属性中定义的有效大小。</p>
 <p><strong>属性装饰器（@property）</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">@property</span><br><span class="line">def key_size(self) -&gt; int:</span><br><span class="line">    return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def key_size(self) -&gt; int:</span><br><span class="line">    return len(self.key) * 8</span><br></pre></td></tr></table></figure>
 
 <p>装饰器@property将方法变成一个可读属性。定义的属性为<code>key_size</code>，用于获取实例的密钥的大小（以位为单位）。<code>len(self.key)</code> 返回密钥的字节长度，乘以8转换为位长度。这提供了一个方便的方式来查询使用中的密钥大小。</p>
 <p>详细 AES 执行流程参考<a target="_blank" rel="noopener" href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">官网 AES 报告</a></p>
