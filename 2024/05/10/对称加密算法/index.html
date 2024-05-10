@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Illias">
+
+
+  <meta name="subtitle" content="春日迟迟">
+
+
+  <meta name="description" content="记录大学学习生活">
+
+
+
+<title>应用密码学设计（照搬并分析设计√）对称加密算法 | Illias&#39; Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Illias' Blog" />
+          Illias&#39; Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        应用密码学设计（照搬并分析设计√）对称加密算法
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/MecoloSa">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+            <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" target="_blank" rel="noopener" href="https://www.zhihu.com/people/65-3-92-7">
+              <iconify-icon width="20" icon="ri:zhihu-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        应用密码学设计（照搬并分析设计√）对称加密算法
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-05-10</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>10 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>2.5k words</span>
+          </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <hr>
+<p>通过逐步探索的认识完成一个自己设计的对称加密算法（逆向分析 :D</p>
+<hr>
+<h2 id="例子与分析"><a href="#例子与分析" class="headerlink" title="例子与分析"></a>例子与分析</h2><p>为了初步了解 python 下的加密方式，我们先以以下密码分组链接模式（CBC）与一重 AES 算法结合，分析以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">def encrypt(data, key):</span><br><span class="line">   iv = os.urandom(16)  # AES 块大小为128位, 即16字节</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   encryptor = cipher.encryptor()</span><br><span class="line">   padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">   padded_data = padder.update(data) + padder.finalize()</span><br><span class="line">   encrypted = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line">   return iv + encrypted</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, key):</span><br><span class="line">   iv = encrypted[:16]</span><br><span class="line">   encrypted_data = encrypted[16:]</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   decryptor = cipher.decryptor()</span><br><span class="line">   decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">   unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">   decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line">   return decrypted</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">   key = os.urandom(32)  # AES-256要求密钥长度为32字节</span><br><span class="line"></span><br><span class="line">   # 获取用户输入</span><br><span class="line">   user_input = input(&quot;请输入您想要加密的内容：&quot;)</span><br><span class="line">   data = user_input.encode(&#x27;utf-8&#x27;)  # 将输入的字符串转换为字节</span><br><span class="line"></span><br><span class="line">   # 加密</span><br><span class="line">   encrypted_data = encrypt(data, key)</span><br><span class="line">   print(&quot;Encrypted:&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">   # 询问用户是否要解密</span><br><span class="line">   if input(&quot;是否要解密加密后的数据？(y/n): &quot;).lower() == &#x27;y&#x27;:</span><br><span class="line">       # 解密</span><br><span class="line">       decrypted_data = decrypt(encrypted_data, key)</span><br><span class="line">       print(&quot;Decrypted:&quot;, decrypted_data.decode(&#x27;utf-8&#x27;))  # 解码字节回字符串</span><br><span class="line">   else:</span><br><span class="line">       print(&quot;已选择不进行解密操作。&quot;)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:` </span><br><span class="line">   main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="关键部分代码分析"><a href="#关键部分代码分析" class="headerlink" title="关键部分代码分析"></a>关键部分代码分析</h3><p>我们截取一个关键部分代码来进行理解（加密部分代码</p>
+<ol>
+<li><p>生成随机的初始向量 IV  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">iv = os.urandom(16)  # AES块大小为128位, 即16字节  </span><br></pre></td></tr></table></figure>
+
+<p>- 作用: 初始向量（IV）用于AES的CBC模式，可以为相同的明文生成不同的密文。<br>- <code>os.urandom(16)</code>: 这个函数生成一个16字节的随机数，用作IV。AES的块大小是128位，即16字节。</p>
+</li>
+<li><p>创建加密对象  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  </span><br><span class="line">encryptor = cipher.encryptor()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code> Cipher</code>: 创建一个Cipher对象，这个对象参数包括加密算法、模式和后端。<br>- <code>algorithms.AES(key)</code>: 此处指明使用AES算法，并传入密钥<code>key</code>，其中<code>key</code>为按照 AES-256 要求随机生成的32位随机数。<br>- <code>modes.CBC(iv)</code>: 指定加密模式为CBC（Cipher Block Chaining），并传入向量IV。<br>- <code>backend=default_backend()</code>: 指定使用默认的加密后端。<br>- <code>cipher.encryptor()</code>: 从Cipher对象中创建一个加密器对象（我将它理解成一个承载 cipher 的对象，因为后续的加密都要基于这个对象格式），用于后续的数据加密。</p>
+</li>
+<li><p>填充数据以符合块大小要求  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">padder = padding.PKCS7(algorithms.AES.block_size).padder()  </span><br><span class="line">padded_data = padder.update(data) + padder.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- PKCS7填充: AES算法要求数据长度必须是块大小的整数倍。PKCS7是一种填充标准，用于在数据的末尾添加足够的填充字节。<br>- <code>padding.PKCS7(algorithms.AES.block_size)</code>: 创建一个PKCS7填充器，设置块大小为AES的块大小（128位）。<br>- 填充过程: <code>padder.update(data)</code>处理原始数据，添加部分填充；<code>padder.finalize()</code>完成填充过程，确保所有数据被正确填充。</p>
+</li>
+<li><p>加密数据  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">encrypted = encryptor.update(padded_data) + encryptor.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code>encryptor.update(padded_data)</code>: 加密填充后的数据，包含以下流程：</p>
+<ol>
+<li><p>输入数据<br> update方法接受一部分（或全部）待加密的数据。在使用像CBC这样的块加密模式时，输入数据通常需要先进行填充，因为块加密算法要求输入数据的长度必须是块大小的整数倍（AES的块大小为128位或16字节）。</p>
+</li>
+<li><p>数据分块<br> 加密器在内部将输入的padded_data分成若干个块，每个块的大小等于加密算法的块大小。对于AES来说，即是每16字节划分为一个块。</p>
+</li>
+<li><p>加密每个块<br> 对于每一个数据块，加密器会按照指定的加密算法和模式进行处理。以上面的AES和CBC模式为例：</p>
+</li>
+</ol>
+<p>第一个数据块：使用初始向量（IV）与第一个数据块进行异或（XOR）操作，然后使用AES算法对结果进行加密。<br>后续数据块：每个后续的数据块都会与前一个加密后的块进行XOR操作，然后再进行AES加密。</p>
+<p>​	     即是说 python 将加密算法已经进行了封装，我们后续需要再行将此函数落实为代码执行。</p>
+<ol start="4">
+<li><p>生成密文<br>加密后的每个块会立即生成相应的密文块。encryptor.update(padded_data)方法将这些密文块<strong>合并</strong>，形成一个连续的密文数据流。</p>
+</li>
+<li><p>返回密文<br>方法最终返回的是处理过的流密文。</p>
+</li>
+</ol>
+<p>- <code>encryptor.finalize()</code>: 完成加密过程，确保所有数据块都被加密。</p>
+</li>
+<li><p>返回IV和加密的数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python  </span><br><span class="line"></span><br><span class="line">return iv + encrypted  </span><br></pre></td></tr></table></figure>
+
+<p> - 最后，函数返回的是IV和加密后的数据的组合。在解密时，需要使用相同的IV和密钥才能正确解密数据。通过<strong>将IV附加到加密数据的前面</strong>，可以方便地在解密时提取和使用。</p>
+</li>
+</ol>
+<h3 id="详细函数解析"><a href="#详细函数解析" class="headerlink" title="详细函数解析"></a>详细函数解析</h3><h4 id="密码分组链接模式"><a href="#密码分组链接模式" class="headerlink" title="密码分组链接模式"></a>密码分组链接模式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br><span class="line">  name = &quot;CBC&quot;</span><br><span class="line">  def __init__(self, initialization_vector: bytes):</span><br><span class="line">     utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">     self._initialization_vector = initialization_vector</span><br><span class="line">  @property</span><br><span class="line">  def initialization_vector(self) -&gt; bytes:</span><br><span class="line">     return self._initialization_vector</span><br><span class="line">  validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br></pre></td></tr></table></figure>
+
+<p>这行代码定义了一个名为CBC的类，它继承自<code>ModeWithInitializationVector</code>，CBC类是一个加密模式，它需要一个初始化向量（IV）。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">name = &quot;CBC&quot;</span><br></pre></td></tr></table></figure>
+
+<p>一个类级别的属性，用于标识该加密模式的名称为”CBC”。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def __init__(self, initialization_vector: bytes):</span><br><span class="line">    utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">    self._initialization_vector = initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数initialization_vector，用作CBC模式的初始向量。</p>
+<p><code>utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</code>：这行代码调用一个工具函数<code>check_byteslike</code>，检查<code>initialization_vector</code>是否是字节类型。这是为了确保类型安全，防止因类型错误而引发运行时错误。<br><code>self._initialization_vector = initialization_vector</code>：这行代码将传入的初始化向量保存在实例变量<code>_initialization_vector</code>中，以便于后续使用。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">@property</span><br><span class="line">def initialization_vector(self) -&gt; bytes:</span><br><span class="line">    return self._initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。此处定义的属性为initialization_vector，用于获取实例的私有变量<code>_initialization_vector</code>的值。这提供了一个安全的访问方式，外部代码可以通过属性访问IV值，而无法直接修改它，保持了数据的封装和安全性。</p>
+<p><strong>方法</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p>将一个名为<code>_check_iv_and_key_length</code>的函数或方法赋值给类的<code>validate_for_algorithm</code>属性。<code>validate_for_algorithm</code>用于在某些操作前验证初始化向量和密钥长度的正确性。确保在加密操作开始前，初始化向量和密钥符合特定算法的要求。</p>
+<h4 id="AES-类"><a href="#AES-类" class="headerlink" title="AES 类"></a>AES 类</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br><span class="line">  name = &quot;AES&quot;</span><br><span class="line">  block_size = 128</span><br><span class="line">  \# 512 added to support AES-256-XTS, which uses 512-bit keys</span><br><span class="line">  key_sizes = frozenset([128, 192, 256, 512])</span><br><span class="line">  def __init__(self, key: bytes):</span><br><span class="line">     self.key = _verify_key_size(self, key)</span><br><span class="line">  @property</span><br><span class="line">  def key_size(self) -&gt; int:</span><br><span class="line">     return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br></pre></td></tr></table></figure>
+
+<p>定义了一个名为<code>AES</code>的类，它继承自<code>BlockCipherAlgorithm</code>。<code>BlockCipherAlgorithm</code>为块密码算法（如AES）提供一些基本功能或规范。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">name = &quot;AES&quot;</span><br><span class="line">block_size = 128</span><br><span class="line">key_sizes = frozenset([128, 192, 256, 512])</span><br></pre></td></tr></table></figure>
+
+<p><code>name = &quot;AES&quot;</code>：一个类级别的属性，用于表明该类实现的是AES算法。<br><code>block_size = 128</code>：表示AES算法使用的块大小是128位，是AES算法的标准块大小。<br><code>key_sizes = frozenset([128, 192, 256, 512])</code>：定义了有效的密钥大小（以位为单位）。AES标准支持128位、192位和256位密钥。额外的512位密钥大小说明可能是为了支持特定的AES变体或模式，如AES-256-XTS。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def __init__(self, key: bytes):</span><br><span class="line">    self.key = _verify_key_size(self, key)</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数key，这个参数是一个字节序列，用作AES算法的密钥。</p>
+<p><code>_verify_key_size(self, key)</code>：这行代码调用了一个函数_verify_key_size，传入当前实例和密钥。用于验证密钥的大小是否符合在<code>key_sizes</code>属性中定义的有效大小。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">@property</span><br><span class="line">def key_size(self) -&gt; int:</span><br><span class="line">    return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。定义的属性为<code>key_size</code>，用于获取实例的密钥的大小（以位为单位）。<code>len(self.key)</code> 返回密钥的字节长度，乘以8转换为位长度。这提供了一个方便的方式来查询使用中的密钥大小。</p>
+<p>详细 AES 执行流程参考<a target="_blank" rel="noopener" href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">官网 AES 报告</a></p>
+<h2 id="完成与实现"><a href="#完成与实现" class="headerlink" title="完成与实现"></a>完成与实现</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">def encrypt(data, keys):</span><br><span class="line">    ivs = [os.urandom(16) for _ in range(3)]  # 为每层加密生成一个随机IV</span><br><span class="line">    encrypted_data = data</span><br><span class="line">    for i, key in enumerate(keys):</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(ivs[i]), backend=default_backend())</span><br><span class="line">        encryptor = cipher.encryptor()</span><br><span class="line">        padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">        padded_data = padder.update(encrypted_data) + padder.finalize()</span><br><span class="line">        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line"></span><br><span class="line">    # 返回所有IV和加密的数据，所有IV对于解密是必需的</span><br><span class="line">    ivs_bytes = b&#x27;&#x27;.join(ivs)</span><br><span class="line">    return ivs_bytes + encrypted_data</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, keys):</span><br><span class="line">    ivs = [encrypted[i*16:(i+1)*16] for i in range(3)]</span><br><span class="line">    encrypted_data = encrypted[48:]  # 前48字节是三个IV</span><br><span class="line">    for i, key in reversed(list(enumerate(keys))):  # 从最后一层开始解密</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(ivs[i]), backend=default_backend())</span><br><span class="line">        decryptor = cipher.decryptor()</span><br><span class="line">        decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">        encrypted_data = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line"></span><br><span class="line">    return encrypted_data</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    keys = [os.urandom(32) for _ in range(3)]  # 生成三个密钥，每个密钥32字节</span><br><span class="line"></span><br><span class="line">    # 获取用户输入</span><br><span class="line">    user_input = input(&quot;请输入您想要加密的内容：&quot;)</span><br><span class="line">    data = user_input.encode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(data, keys)</span><br><span class="line">    print(&quot;Encrypted:&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 询问用户是否要解密加密后的数据</span><br><span class="line">    if input(&quot;是否要解密加密后的数据？(y/n): &quot;).lower() == &#x27;y&#x27;:</span><br><span class="line">        decrypted_data = decrypt(encrypted_data, keys)</span><br><span class="line">        print(&quot;Decrypted:&quot;, decrypted_data.decode(&#x27;utf-8&#x27;))</span><br><span class="line">    else:</span><br><span class="line">        print(&quot;已选择不进行解密操作。&quot;)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>CBC + 三重 AES 算法</p>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/05/10/upload_file/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          Upload file to my blog.
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
