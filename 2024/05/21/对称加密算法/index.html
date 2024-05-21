@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Illias">
+
+
+  <meta name="subtitle" content="春日迟迟">
+
+
+  <meta name="description" content="记录大学学习生活">
+
+
+
+<title>应用密码学设计（照搬并分析设计√）AES对称加密算法 | Illias&#39; Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Illias' Blog" />
+          Illias&#39; Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        应用密码学设计（照搬并分析设计√）AES对称加密算法
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/MecoloSa">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+            <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" target="_blank" rel="noopener" href="https://www.zhihu.com/people/65-3-92-7">
+              <iconify-icon width="20" icon="ri:zhihu-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        应用密码学设计（照搬并分析设计√）AES对称加密算法
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-05-21</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>19 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>4.5k words</span>
+          </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <hr>
+<p>通过逐步探索的认识完成一个自己设计的对称加密算法（逆向分析 :D</p>
+<hr>
+<h2 id="例子与分析"><a href="#例子与分析" class="headerlink" title="例子与分析"></a>例子与分析</h2><p>为了初步了解 python 下的加密方式，我们先以以下密码分组链接模式（CBC）与一重 AES 算法结合，分析以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">def encrypt(data, key):</span><br><span class="line">   iv = os.urandom(16)  # AES 块大小为128位, 即16字节</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   encryptor = cipher.encryptor()</span><br><span class="line">   padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">   padded_data = padder.update(data) + padder.finalize()</span><br><span class="line">   encrypted = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line">   return iv + encrypted</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, key):</span><br><span class="line">   iv = encrypted[:16]</span><br><span class="line">   encrypted_data = encrypted[16:]</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   decryptor = cipher.decryptor()</span><br><span class="line">   decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">   unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">   decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line">   return decrypted</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">   key = os.urandom(32)  # AES-256要求密钥长度为32字节</span><br><span class="line"></span><br><span class="line">   # 获取用户输入</span><br><span class="line">   user_input = input(&quot;请输入您想要加密的内容：&quot;)</span><br><span class="line">   data = user_input.encode(&#x27;utf-8&#x27;)  # 将输入的字符串转换为字节</span><br><span class="line"></span><br><span class="line">   # 加密</span><br><span class="line">   encrypted_data = encrypt(data, key)</span><br><span class="line">   print(&quot;Encrypted:&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">   # 询问用户是否要解密</span><br><span class="line">   if input(&quot;是否要解密加密后的数据？(y/n): &quot;).lower() == &#x27;y&#x27;:</span><br><span class="line">       # 解密</span><br><span class="line">       decrypted_data = decrypt(encrypted_data, key)</span><br><span class="line">       print(&quot;Decrypted:&quot;, decrypted_data.decode(&#x27;utf-8&#x27;))  # 解码字节回字符串</span><br><span class="line">   else:</span><br><span class="line">       print(&quot;已选择不进行解密操作。&quot;)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:` </span><br><span class="line">   main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="关键部分代码分析"><a href="#关键部分代码分析" class="headerlink" title="关键部分代码分析"></a>关键部分代码分析</h3><p>我们截取一个关键部分代码来进行理解（加密部分代码</p>
+<ol>
+<li><p>生成随机的初始向量 IV  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iv = os.urandom(16)  # AES块大小为128位, 即16字节  </span><br></pre></td></tr></table></figure>
+
+<p>- 作用: 初始向量（IV）用于AES的CBC模式，可以为相同的明文生成不同的密文。<br>- <code>os.urandom(16)</code>: 这个函数生成一个16字节的随机数，用作IV。AES的块大小是128位，即16字节。</p>
+</li>
+<li><p>创建加密对象  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  </span><br><span class="line">encryptor = cipher.encryptor()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code> Cipher</code>: 创建一个Cipher对象，这个对象参数包括加密算法、模式和后端。<br>- <code>algorithms.AES(key)</code>: 此处指明使用AES算法，并传入密钥<code>key</code>，其中<code>key</code>为按照 AES-256 要求随机生成的32位随机数。<br>- <code>modes.CBC(iv)</code>: 指定加密模式为CBC（Cipher Block Chaining），并传入向量IV。<br>- <code>backend=default_backend()</code>: 指定使用默认的加密后端。<br>- <code>cipher.encryptor()</code>: 从Cipher对象中创建一个加密器对象（我将它理解成一个承载 cipher 的对象，因为后续的加密都要基于这个对象格式），用于后续的数据加密。</p>
+</li>
+<li><p>填充数据以符合块大小要求  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">padder = padding.PKCS7(algorithms.AES.block_size).padder()  </span><br><span class="line">padded_data = padder.update(data) + padder.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- PKCS7填充: AES算法要求数据长度必须是块大小的整数倍。PKCS7是一种填充标准，用于在数据的末尾添加足够的填充字节。<br>- <code>padding.PKCS7(algorithms.AES.block_size)</code>: 创建一个PKCS7填充器，设置块大小为AES的块大小（128位）。<br>- 填充过程: <code>padder.update(data)</code>处理原始数据，添加部分填充；<code>padder.finalize()</code>完成填充过程，确保所有数据被正确填充。</p>
+</li>
+<li><p>加密数据  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">encrypted = encryptor.update(padded_data) + encryptor.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code>encryptor.update(padded_data)</code>: 加密填充后的数据，包含以下流程：</p>
+<ol>
+<li><p>输入数据<br> update方法接受一部分（或全部）待加密的数据。在使用像CBC这样的块加密模式时，输入数据通常需要先进行填充，因为块加密算法要求输入数据的长度必须是块大小的整数倍（AES的块大小为128位或16字节）。</p>
+</li>
+<li><p>数据分块<br> 加密器在内部将输入的padded_data分成若干个块，每个块的大小等于加密算法的块大小。对于AES来说，即是每16字节划分为一个块。</p>
+</li>
+<li><p>加密每个块<br> 对于每一个数据块，加密器会按照指定的加密算法和模式进行处理。以上面的AES和CBC模式为例：</p>
+</li>
+</ol>
+<p>第一个数据块：使用初始向量（IV）与第一个数据块进行异或（XOR）操作，然后使用AES算法对结果进行加密。<br>后续数据块：每个后续的数据块都会与前一个加密后的块进行XOR操作，然后再进行AES加密。</p>
+<p>​	     即是说 python 将加密算法已经进行了封装，我们后续需要再行将此函数落实为代码执行。</p>
+<ol start="4">
+<li><p>生成密文<br>加密后的每个块会立即生成相应的密文块。encryptor.update(padded_data)方法将这些密文块<strong>合并</strong>，形成一个连续的密文数据流。</p>
+</li>
+<li><p>返回密文<br>方法最终返回的是处理过的流密文。</p>
+</li>
+</ol>
+<p>- <code>encryptor.finalize()</code>: 完成加密过程，确保所有数据块都被加密。</p>
+</li>
+<li><p>返回IV和加密的数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return iv + encrypted  </span><br></pre></td></tr></table></figure>
+
+<p> - 最后，函数返回的是IV和加密后的数据的组合。在解密时，需要使用相同的IV和密钥才能正确解密数据。通过<strong>将IV附加到加密数据的前面</strong>，可以方便地在解密时提取和使用。</p>
+</li>
+</ol>
+<h3 id="详细函数解析"><a href="#详细函数解析" class="headerlink" title="详细函数解析"></a>详细函数解析</h3><h4 id="密码分组链接模式"><a href="#密码分组链接模式" class="headerlink" title="密码分组链接模式"></a>密码分组链接模式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br><span class="line">  name = &quot;CBC&quot;</span><br><span class="line">  def __init__(self, initialization_vector: bytes):</span><br><span class="line">     utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">     self._initialization_vector = initialization_vector</span><br><span class="line">  @property</span><br><span class="line">  def initialization_vector(self) -&gt; bytes:</span><br><span class="line">     return self._initialization_vector</span><br><span class="line">  validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class CBC(ModeWithInitializationVector):</span><br></pre></td></tr></table></figure>
+
+<p>这行代码定义了一个名为CBC的类，它继承自<code>ModeWithInitializationVector</code>，CBC类是一个加密模式，它需要一个初始化向量（IV）。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;CBC&quot;</span><br></pre></td></tr></table></figure>
+
+<p>一个类级别的属性，用于标识该加密模式的名称为”CBC”。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, initialization_vector: bytes):</span><br><span class="line">    utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">    self._initialization_vector = initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数initialization_vector，用作CBC模式的初始向量。</p>
+<p><code>utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</code>：这行代码调用一个工具函数<code>check_byteslike</code>，检查<code>initialization_vector</code>是否是字节类型。这是为了确保类型安全，防止因类型错误而引发运行时错误。<br><code>self._initialization_vector = initialization_vector</code>：这行代码将传入的初始化向量保存在实例变量<code>_initialization_vector</code>中，以便于后续使用。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def initialization_vector(self) -&gt; bytes:</span><br><span class="line">    return self._initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。此处定义的属性为initialization_vector，用于获取实例的私有变量<code>_initialization_vector</code>的值。这提供了一个安全的访问方式，外部代码可以通过属性访问IV值，而无法直接修改它，保持了数据的封装和安全性。</p>
+<p><strong>方法</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p>将一个名为<code>_check_iv_and_key_length</code>的函数或方法赋值给类的<code>validate_for_algorithm</code>属性。<code>validate_for_algorithm</code>用于在某些操作前验证初始化向量和密钥长度的正确性。确保在加密操作开始前，初始化向量和密钥符合特定算法的要求。</p>
+<h4 id="AES-类"><a href="#AES-类" class="headerlink" title="AES 类"></a>AES 类</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br><span class="line">  name = &quot;AES&quot;</span><br><span class="line">  block_size = 128</span><br><span class="line">  \# 512 added to support AES-256-XTS, which uses 512-bit keys</span><br><span class="line">  key_sizes = frozenset([128, 192, 256, 512])</span><br><span class="line">  def __init__(self, key: bytes):</span><br><span class="line">     self.key = _verify_key_size(self, key)</span><br><span class="line">  @property</span><br><span class="line">  def key_size(self) -&gt; int:</span><br><span class="line">     return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class AES(BlockCipherAlgorithm):</span><br></pre></td></tr></table></figure>
+
+<p>定义了一个名为<code>AES</code>的类，它继承自<code>BlockCipherAlgorithm</code>。<code>BlockCipherAlgorithm</code>为块密码算法（如AES）提供一些基本功能或规范。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;AES&quot;</span><br><span class="line">block_size = 128</span><br><span class="line">key_sizes = frozenset([128, 192, 256, 512])</span><br></pre></td></tr></table></figure>
+
+<p><code>name = &quot;AES&quot;</code>：一个类级别的属性，用于表明该类实现的是AES算法。<br><code>block_size = 128</code>：表示AES算法使用的块大小是128位，是AES算法的标准块大小。<br><code>key_sizes = frozenset([128, 192, 256, 512])</code>：定义了有效的密钥大小（以位为单位）。AES标准支持128位、192位和256位密钥。额外的512位密钥大小说明可能是为了支持特定的AES变体或模式，如AES-256-XTS。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, key: bytes):</span><br><span class="line">    self.key = _verify_key_size(self, key)</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数key，这个参数是一个字节序列，用作AES算法的密钥。</p>
+<p><code>_verify_key_size(self, key)</code>：这行代码调用了一个函数_verify_key_size，传入当前实例和密钥。用于验证密钥的大小是否符合在<code>key_sizes</code>属性中定义的有效大小。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def key_size(self) -&gt; int:</span><br><span class="line">    return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。定义的属性为<code>key_size</code>，用于获取实例的密钥的大小（以位为单位）。<code>len(self.key)</code> 返回密钥的字节长度，乘以8转换为位长度。这提供了一个方便的方式来查询使用中的密钥大小。</p>
+<p>详细 AES 执行流程参考 <a target="_blank" rel="noopener" href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">官网 AES 报告</a></p>
+<h2 id="完成与实现（-WAV-PNG"><a href="#完成与实现（-WAV-PNG" class="headerlink" title="完成与实现（.WAV .PNG)"></a>完成与实现（.WAV .PNG)</h2><p>现在采用 CBC + 多重（用户决定） AES 算法 来模拟标准的正常流程的主要函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">import wave</span><br><span class="line">from PIL import Image</span><br><span class="line"># import ffmpeg</span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line"># -----------------------------------加解密-------------------------------------------</span><br><span class="line">def encrypt(data, keys, buff):</span><br><span class="line">    # 为每层加密生成一个随机IV</span><br><span class="line">    ivs = [os.urandom(16) for _ in range(buff)]</span><br><span class="line">    encrypted_data = data</span><br><span class="line"></span><br><span class="line">    # 逐层加密数据</span><br><span class="line">    for i in range(buff):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        encryptor = cipher.encryptor()</span><br><span class="line">        padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">        padded_data = padder.update(encrypted_data) + padder.finalize()</span><br><span class="line">        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line"></span><br><span class="line">    # 将所有IV和加密的数据结合，所有IV对于解密是必需的</span><br><span class="line">    ivs_bytes = b&#x27;&#x27;.join(ivs)</span><br><span class="line">    return ivs_bytes + encrypted_data</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, keys, buff):</span><br><span class="line">    # 根据 buff 的值计算 IV 部分的字节长度</span><br><span class="line">    iv_length = 16 * buff</span><br><span class="line">    # 提取 IVs</span><br><span class="line">    ivs = [encrypted[i * 16:(i + 1) * 16] for i in range(buff)]</span><br><span class="line">    # 提取加密后的数据，跳过 IV 部分</span><br><span class="line">    encrypted_data = encrypted[iv_length:]</span><br><span class="line"></span><br><span class="line">    # 从最后一层开始逐层解密</span><br><span class="line">    for i in reversed(range(buff)):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        decryptor = cipher.decryptor()</span><br><span class="line">        decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">        # 解除填充</span><br><span class="line">        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">        encrypted_data = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line"></span><br><span class="line">    # 返回最终解密后的数据</span><br><span class="line">    return encrypted_data</span><br><span class="line"># -----------------------------------WAV----------------------------------------</span><br><span class="line">def read_wav_file(filename):</span><br><span class="line">    with wave.open(filename, &#x27;rb&#x27;) as wav_file:</span><br><span class="line">        data = wav_file.readframes(wav_file.getnframes())</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_wav_file(filename, data, params):</span><br><span class="line">    with wave.open(filename, &#x27;wb&#x27;) as wav_file:</span><br><span class="line">        wav_file.setparams(params)</span><br><span class="line">        wav_file.writeframes(data)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_wav(buff):</span><br><span class="line">    print(&quot;加/解密 WAV 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 WAV 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    keys = [os.urandom(32) for _r in range(buff)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # 读取原始WAV文件</span><br><span class="line">    original_data = read_wav_file(input_path)</span><br><span class="line">    wav_params = wave.open(input_path).getparams()</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line"># ----------------------------MP3------------------------------------</span><br><span class="line"># def convert_mp3_to_wav(source_file, target_file):</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     使用ffmpeg将MP3文件转换为WAV格式。</span><br><span class="line">    </span><br><span class="line">#     :param source_file: MP3文件的路径</span><br><span class="line">#     :param target_file: 生成的WAV文件的路径</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     # 调用ffmpeg进行转换</span><br><span class="line">#         # 创建ffmpeg输入流</span><br><span class="line">#     audio_input = ffmpeg.input(source_file)</span><br><span class="line">#     # 创建ffmpeg输出流，指定输出格式为wav</span><br><span class="line">#     audio_output = ffmpeg.output(audio_input, target_file, format=&#x27;wav&#x27;)</span><br><span class="line">#     # 执行ffmpeg命令</span><br><span class="line">#     ffmpeg.run(audio_output)</span><br><span class="line"># # def read_mp3_file(file_path):</span><br><span class="line"># #     # 使用pydub读取MP3文件</span><br><span class="line"># #     audio = AudioSegment.from_mp3(file_path)</span><br><span class="line"># #     return audio</span><br><span class="line"></span><br><span class="line"># # def write_mp3_file(file_path, audio_data):</span><br><span class="line"># #     # 导出音频数据到MP3</span><br><span class="line"># #     audio_data.export(file_path, format=&quot;mp3&quot;)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_mp3(buff):</span><br><span class="line">    print(&quot;加/解密 MP3 文件\n: 功能暂未开发&quot;)</span><br><span class="line">    # input_path = input(&quot;请输入原始 MP3 文件路径：&quot;)</span><br><span class="line">    # output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    # output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # keys = [os.urandom(32) for _r in range(3)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # # 读取原始MP3文件</span><br><span class="line">    # path_without_extension, _ = os.path.splitext(input_path)</span><br><span class="line">    # path_with_extension = path_without_extension + &#x27;.wav&#x27;</span><br><span class="line">    # original_data = convert_mp3_to_wav(input_path, path_with_extension)</span><br><span class="line"></span><br><span class="line">    # wav_params = wave.open(path_with_extension).getparams()</span><br><span class="line"></span><br><span class="line">    # # 加密</span><br><span class="line">    # encrypted_data = encrypt(original_data, keys)</span><br><span class="line">    # print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    # write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # # 解密</span><br><span class="line">    # decrypted_data = decrypt(encrypted_data, keys)</span><br><span class="line">    # print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    # write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line"># -----------------------------PNG---------------------------------------</span><br><span class="line">def read_png_file(filename):</span><br><span class="line">    &quot;&quot;&quot;读取PNG文件并返回数据.&quot;&quot;&quot;</span><br><span class="line">    with Image.open(filename) as img:</span><br><span class="line">        data = img.tobytes()</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_png_file(filename, data, mode, size):</span><br><span class="line">    &quot;&quot;&quot;使用给定数据创建一个新的PNG文件.&quot;&quot;&quot;</span><br><span class="line">    img = Image.frombytes(mode, size, data)</span><br><span class="line">    img.save(filename)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_png(buff):</span><br><span class="line">    print(&quot;加/解密 PNG 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 PNG 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 PNG 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 PNG 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # 生成密钥</span><br><span class="line">    keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line"></span><br><span class="line">    # 读取原始PNG文件</span><br><span class="line">    original_data = read_png_file(input_path)</span><br><span class="line">    img = Image.open(input_path)</span><br><span class="line">    mode, size = img.mode, img.size</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_encrypted_path, encrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_decrypted_path, decrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    print(&quot;这是一个 AES 多重加密算法，目前支持加密 WAV, PNG 格式的文件：&quot;)</span><br><span class="line">    while True:</span><br><span class="line">        # 请求用户输入</span><br><span class="line">        input_string = input(&quot;请输入您需要的AES加密层数（20以下的正整数）：&quot;)</span><br><span class="line">        </span><br><span class="line">        try:</span><br><span class="line">            # 尝试将输入转换为整数</span><br><span class="line">            buff = int(input_string)</span><br><span class="line">            </span><br><span class="line">            # 检查是否是20以下的正整数</span><br><span class="line">            if 1 &lt;= buff &lt;= 20:</span><br><span class="line">                break</span><br><span class="line">            else:</span><br><span class="line">                print(&quot;输入错误：请输入一个20以下的正整数。&quot;)</span><br><span class="line">        </span><br><span class="line">        except ValueError:</span><br><span class="line">            # 处理无法转换为整数的情况</span><br><span class="line">            print(&quot;输入错误：请输入一个有效的整数。&quot;)</span><br><span class="line">        </span><br><span class="line">    print(&quot;你可以有三种选择：&quot;)</span><br><span class="line">    print(&quot;1. 加/解密 .wav 文件；&quot;)</span><br><span class="line">    print(&quot;2. 加/解密 .mp3 文件；&quot;)</span><br><span class="line">    print(&quot;3. 加/解密 .png 文件。&quot;)</span><br><span class="line">    choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    while ((choice != &#x27;1&#x27;) &amp; (choice != &#x27;2&#x27;) &amp; (choice != &#x27;3&#x27;)):</span><br><span class="line">        print(&quot;无效的输入，请按要求输入!&quot;)</span><br><span class="line">        choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    if choice == &#x27;1&#x27;:</span><br><span class="line">        encrypt_decrypt_wav(buff)</span><br><span class="line">    elif choice == &#x27;2&#x27;:</span><br><span class="line">        encrypt_decrypt_mp3(buff)</span><br><span class="line">    elif choice == &#x27;3&#x27;:</span><br><span class="line">        encrypt_decrypt_png(buff)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()  </span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>.mp3</code> 格式由于 python 在 <code>ffmpeg</code> 库存在比较重大缺漏，解决起来较为复杂，且其它可以直接处理 <code>.mp3</code> 格式的库较少，所以没有给出具体方案，如果解决期待您的回复！</p>
+<h2 id="AES-算法细节解析"><a href="#AES-算法细节解析" class="headerlink" title="AES 算法细节解析"></a>AES 算法细节解析</h2><p>以下提供一个简化的AES算法实现流程，以供初步分析</p>
+<h3 id="密钥扩展"><a href="#密钥扩展" class="headerlink" title="密钥扩展"></a>密钥扩展</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def key_expansion(key):</span><br><span class="line">    # AES-128使用的完整S-box</span><br><span class="line">    s_box = [</span><br><span class="line">    0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,</span><br><span class="line">    0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,</span><br><span class="line">    0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,</span><br><span class="line">    0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75,</span><br><span class="line">    0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84,</span><br><span class="line">    0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,</span><br><span class="line">    0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8,</span><br><span class="line">    0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,</span><br><span class="line">    0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,</span><br><span class="line">    0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb,</span><br><span class="line">    0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79,</span><br><span class="line">    0xe7, 0xc8, 0x37, 0xc1, 0x1d, 0xd5, 0x8e, 0x9e, 0x4e, 0x4b, 0xa1, 0x89, 0xd9, 0x8d, 0xfa, 0xbf, 0xea, 0xea,</span><br><span class="line">    0x11, 0xba, 0x4f, 0x24, 0xa1, 0x70, 0x6a, 0x00, 0x4e, 0x70, 0x3e, 0xd9, 0xfc, 0xdc, 0x4c, 0x20</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"> # 轮常数Rcon</span><br><span class="line">rcon = [</span><br><span class="line">    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">def key_expansion(key):</span><br><span class="line">    key_size = len(key)</span><br><span class="line">    key_symbols = key_size // 4</span><br><span class="line">    rounds = 10 if key_size == 16 else (12 if key_size == 24 else 14)</span><br><span class="line">    expanded_key = [0] * (4 * (rounds + 1) * 4)</span><br><span class="line">    expanded_key[:key_size] = list(key)</span><br><span class="line"></span><br><span class="line">    # 用于扩展的临时变量</span><br><span class="line">    temp = [0] * 4</span><br><span class="line"></span><br><span class="line">    # 开始扩展</span><br><span class="line">    i = key_symbols</span><br><span class="line">    while i &lt; 4 * (rounds + 1):</span><br><span class="line">        for t in range(4):</span><br><span class="line">            temp[t] = expanded_key[(i - 1) * 4 + t]</span><br><span class="line"></span><br><span class="line">        if i % key_symbols == 0:</span><br><span class="line">            # 旋转</span><br><span class="line">            temp = temp[1:] + temp[:1]</span><br><span class="line">            # S-box substitution</span><br><span class="line">            temp = [Sbox[b] for b in temp]</span><br><span class="line">            # Rcon</span><br><span class="line">            temp[0] ^= Rcon[i // key_symbols - 1]</span><br><span class="line">        </span><br><span class="line">        for t in range(4):</span><br><span class="line">            expanded_key[i * 4 + t] = expanded_key[(i - key_symbols) * 4 + t] ^ temp[t]</span><br><span class="line">        i += 1</span><br><span class="line"></span><br><span class="line">    return expanded_key</span><br><span class="line">    </span><br><span class="line">key = b&#x27;\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c&#x27;  # 16字节密钥</span><br><span class="line">expanded_key = key_expansion(key)</span><br><span class="line">print(expanded_key)</span><br></pre></td></tr></table></figure>
+
+<h3 id="轮密钥加"><a href="#轮密钥加" class="headerlink" title="轮密钥加"></a>轮密钥加</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def add_round_key(state, round_key):</span><br><span class="line">    &quot;&quot;&quot;将轮密钥添加到状态数组中&quot;&quot;&quot;</span><br><span class="line">    new_state = [[0] * 4 for _ in range(4)]</span><br><span class="line">    for r in range(4):</span><br><span class="line">        for c in range(4):</span><br><span class="line">            new_state[r][c] = state[r][c] ^ round_key[r][c]</span><br><span class="line">    return new_state</span><br><span class="line"></span><br><span class="line"># 示例的状态数组和轮密钥（仅为示例，通常由密钥扩展生成）</span><br><span class="line">state = [</span><br><span class="line">    [0x32, 0x88, 0x31, 0xe0],</span><br><span class="line">    [0x43, 0x5a, 0x31, 0x37],</span><br><span class="line">    [0xf6, 0x30, 0x98, 0x07],</span><br><span class="line">    [0xa8, 0x8d, 0xa2, 0x34]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">round_key = [</span><br><span class="line">    [0x2b, 0x28, 0xab, 0x09],</span><br><span class="line">    [0x7e, 0xae, 0xf7, 0xcf],</span><br><span class="line">    [0x15, 0xd2, 0x15, 0x4f],</span><br><span class="line">    [0x16, 0xa6, 0x88, 0x3c]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"># 应用轮密钥加</span><br><span class="line">new_state = add_round_key(state, round_key)</span><br><span class="line">print(&quot;新的状态数组：&quot;)</span><br><span class="line">for row in new_state:</span><br><span class="line">    print(&quot; &quot;.join(f&quot;&#123;x:02x&#125;&quot; for x in row))</span><br></pre></td></tr></table></figure>
+
+<p><code>[s ^ k for s, k in zip(state, round_key)]</code>：state 和 round_key 是包含16个字节的列表。zip(state, round_key) 将这两个列表的相应元素配对，形成16个元组，每个元组包含来自两个列表的对应元素。列表推导式遍历这些元组，对每一对字节（即每个元组中的 s 和 k）执行按位异或操作，生成一个新的列表。</p>
+<h2 id="AES-加密与解密的区别："><a href="#AES-加密与解密的区别：" class="headerlink" title="AES 加密与解密的区别："></a>AES 加密与解密的区别：</h2><p>主要涉及操作的逆向应用</p>
+<p>​	  <strong>加密过程:</strong></p>
+<p>​	· 字节替换（SubBytes）：每个字节通过查S盒实现非线性替换。<br>​	· 行移位（ShiftRows）：行移位操作，第一行不动，每行向左移位增加。<br>​	· 列混合（MixColumns）：对状态矩阵的每一列应用一个线性变换，增加扩散性（最后一轮除外）。<br>​	· 轮密钥加（AddRoundKey）：每一轮的状态与轮密钥进行异或操作。</p>
+<p>​	    <strong>解密过程:</strong></p>
+<p>​	· 逆向字节替换（InvSubBytes）：使用逆S盒替换每个字节。<br>​	· 逆向行移位（InvShiftRows）：与加密中的行移位相反，第一行不动，每行向右移位增加。<br>​	· 逆向列混合（InvMixColumns）：应用列混合的逆变换。<br>​	· 轮密钥加（AddRoundKey）：同加密过程。</p>
+<ol start="2">
+<li>密钥调度<br>在AES中，加密和解密都使用相同的主密钥生成一系列轮密钥，但是应用的顺序不同：</li>
+</ol>
+<p>​	· 加密：按顺序使用生成的轮密钥。<br>​	· 解密：轮密钥的使用顺序是逆向的，即最后一个轮密钥先用，之后倒序使用其他轮密钥。</p>
+<ol start="3">
+<li>性能考虑<br>解密过程使用的是加密步骤的逆操作，特别是在实现InvMixColumns时，解密过程可能会比加密稍微复杂或低效。</li>
+</ol>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+        <a href="/2024/05/21/upload_file/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          <iconify-icon width="20" icon="ri:arrow-left-s-line" data-inline="false"></iconify-icon>
+          Upload file to my blog.
+        </a>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/05/21/Cpt3_Web/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          计算机三级网络技术个人错题（部分）归档
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
