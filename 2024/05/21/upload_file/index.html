@@ -19,7 +19,7 @@
 
 
 
-<title>Upload file to my blog. | Illias&#39; Blog</title>
+<title>Upload &amp; Restore file to your blog. | Illias&#39; Blog</title>
 
 
 
@@ -158,7 +158,7 @@
         </h2>
       </a>
       <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
-        Upload file to my blog.
+        Upload & Restore file to your blog.
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-3">
@@ -226,7 +226,7 @@
   <header class="overflow-hidden pt-6 pb-6 md:pt-12">
     <div class="pt-4 md:pt-6">
       <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
-        Upload file to my blog.
+        Upload & Restore file to your blog.
       </h1>
       <div>
         <section class="flex items-center gap-3 text-sm">
@@ -242,7 +242,7 @@
           <span class="text-gray-400">·</span>
           <span class="flex items-center gap-1">
             <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
-            <span>255 words</span>
+            <span>482 words</span>
           </span>
           
         </section>
@@ -251,7 +251,7 @@
   </header>
   <!-- content -->
   <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
-    <p>总算部署到把静态本地 blog 部署到 github 网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的 blog 上去吧</p>
+    <h1 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h1><p>总算部署到把静态本地 blog 部署到 github 网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的 blog 上去吧</p>
 <p>首先尝试第一种方法，先把更新的 md 文件 pull 到我的仓库里面去···</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
 
@@ -267,6 +267,21 @@
 <p>等待几分钟即可</p>
 <p>但是有时存在网络不稳定问题导致经常出错 :(  </p>
 <p>后续需要进一步解决</p>
+<h1 id="恢复文件"><a href="#恢复文件" class="headerlink" title="恢复文件"></a>恢复文件</h1><p>不知道哪位把整个文件夹（正常来说应该在根目录下的<code>blog</code>文件夹执行上述操作）执行了上述操作还寻思为什么会出问题，最后在查找解决方法 restore 的过程中中断 failed，导致整个本地个人博客消失，心慌之下终于在网上找到解决方案并折腾回来了上一版本的信息。</p>
+<ol>
+<li>查看提交的历史记录并找到对应的版本</li>
+</ol>
+<p>​	<code>git reflog --date=iso</code></p>
+<ol start="2">
+<li><p>使用<code>git show commitId</code>来确认恢复对象为这次的修改（commitId 为上述查询到的目标版本号）</p>
+</li>
+<li><p>使用git cherry-pick commitId 来重新把这次修改应用到该分支上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick commitId</span><br><span class="line"></span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git cherry-pick --continue</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后执行<code>git push</code>恢复文件</p>
+</li>
+</ol>
+<p>真的很恐怖我的作业还在上面&#x2F;哭，还好解决了</p>
 
   </article>
   <!-- tag -->
