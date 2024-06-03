@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Illias">
+
+
+  <meta name="subtitle" content="春日迟迟">
+
+
+  <meta name="description" content="记录大学学习生活">
+
+
+
+<title>汇编期末报告 | Illias&#39; Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Illias' Blog" />
+          Illias&#39; Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        汇编期末报告
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/MecoloSa">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+            <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" target="_blank" rel="noopener" href="https://www.zhihu.com/people/65-3-92-7">
+              <iconify-icon width="20" icon="ri:zhihu-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        汇编期末报告
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-06-03</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>6 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>1.5k words</span>
+          </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <h2 id="第一个jz向上为第一部分，要让程序输出-“success”的分析："><a href="#第一个jz向上为第一部分，要让程序输出-“success”的分析：" class="headerlink" title="第一个jz向上为第一部分，要让程序输出 “success”的分析："></a>第一个jz向上为第一部分，要让程序输出 “success”的分析：</h2><p>![](api&#x2F;images&#x2F;4cKBJpeDKTGD&#x2F;屏幕截图 2024-05-16 155148.png)</p>
+<p><strong>输入读取</strong>:</p>
+<ul>
+<li>用户输入学生 ID 和密钥。这些输入通过 <code>sub_3A1041</code> 函数读取，该函数可能是封装了 <code>scanf</code> 或类似功能的自定义函数。</li>
+</ul>
+<p><strong>内存分配和键值处理</strong>:</p>
+<ul>
+<li>使用 <code>malloc</code> 分配内存，大小取决于 <code>(var_38 - Block) / 8 * 12</code>。这个计算涉及到一些变量，可能是基于输入的长度或者类似参数。</li>
+<li>输入的“键”被读取到分配的内存中。</li>
+</ul>
+<p><strong>数据处理和比较</strong>:</p>
+<ul>
+<li>代码执行了一系列的 <code>xor</code> 和 <code>shld</code> 操作。这些操作在内存块中进行，可能是执行某种加密或数据转换。</li>
+<li>之后，内存区域的内容被与另一部分的内容进行比较。如果所有比较都相等 (<code>jnz loc_3A7C15</code> 未被执行)，则继续执行。</li>
+</ul>
+<p><strong>循环处理</strong>:</p>
+<ul>
+<li><code>xor</code> 操作在一个循环中重复，这个循环基于一个计算得到的次数进行。循环的次数是 <code>(var_38 - Block) / 8</code>，同样可能基于输入长度。</li>
+</ul>
+<p><strong>成功条件</strong>:</p>
+<ul>
+<li>如果所有 <code>xor</code> 操作后的比较都相等，且没有跳转到 <code>loc_3A7C15</code>，则会执行到打印 “success” 的代码行。</li>
+<li>在打印 “success” 之前，还会检查 <code>Block</code> 指针是否非空，这可能是为了确认之前的操作或内存分配是否成功。</li>
+</ul>
+<p>推测输入值 “2022141530151” 处理流程：</p>
+<p><strong>输入处理</strong>:</p>
+<ul>
+<li>首先，代码提示用户输入学生 ID，假设输入 “2022141530151”。这个 ID 被存储在一个由 <code>lea eax, [ebp+Arglist]</code> 和 <code>push eax</code> 指向的缓冲区内，与格式字符串 <code>&quot;%13s&quot;</code> 一起被 <code>sub_3A1041</code> 使用，这个函数在进行进行字符串的读取。</li>
+</ul>
+<p><strong>内存分配</strong>:</p>
+<ul>
+<li>接下来代码进行内存分配，这部分涉及到 <code>var_38</code> 和 <code>Block</code> 这两个变量。具体的大小计算是 <code>(var_38 - Block) / 8 * 12</code>，然后调用 <code>malloc</code>。通过查阅源码 ，发现<code>var_38</code> 大小为 <code>0x38</code>， <code>Block</code>大小为<code>0x3C</code> 的初始值。这个大小计算可能基于你的输入长度或其他因素。</li>
+</ul>
+<p><strong>键值读取</strong>:</p>
+<ul>
+<li>然后程序再次提示输入，这次是输入“键”。这个键值也被读取并存储，用来进行后续的数据比较或加密&#x2F;解密操作。</li>
+</ul>
+<p><strong>数据处理</strong>:</p>
+<ul>
+<li>程序执行一系列的 <code>xor</code> 和 <code>shld</code> 指令，这些可能是对数据进行某种形式的处理。这个处理可能依赖于输入的“键”和“ID”的特定属性。</li>
+</ul>
+<p><strong>比较逻辑</strong>:</p>
+<ul>
+<li>处理后的数据被与一些预设值进行比较。所有这些比较都必须成功（即相等），程序流程才会继续向前。</li>
+</ul>
+<p><strong>成功输出</strong>:</p>
+<ul>
+<li>如果所有条件满足（即所有比较都通过），程序最终会输出 “success”。</li>
+</ul>
+<p>观察到，<code>loc_3A7BB1</code> 对应着success输出，前面有 <code>jz loc_3A7BB1</code> 汇编能够跳转（EFLAGS 寄存器 的 PSW 标志为0则跳转），从此处切入。</p>
+<p>Shift + F12查看字符串长度，锁定输入长度为 72 位，此时第一次 jz 之前 al 为 0x1 ，不会跳转到key error。</p>
+<p><img src="/api/images/VEcoBrrJiXyJ/image.png"></p>
+<p>假设输入 1*72，动调查看</p>
+<p><img src="/api/images/n1a3lfoRzlY8/image.png"></p>
+<p>通过以上初步检查与分析，初步判定上述汇编代码为对我的输入进行一系列异或操作，形成密钥，并未涉及密钥的检查部分。</p>
+<h3 id="定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到-F9继续执行"><a href="#定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到-F9继续执行" class="headerlink" title="定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到(F9继续执行)"></a>定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到(F9继续执行)</h3><p><img src="/api/images/zYa1uEk0Gjlc/image.png"></p>
+<p>时，为了通过每轮密钥检查，参考以下部分进行修改(F7单步执行)：</p>
+<p><img src="/api/images/Tu3rA7F3Wygo/image.png"></p>
+<p>将 RSI 中（用户输入的值）修改为其将要比较的对象，即 RCX 中存储的值，每次用此方法进行检查绕过，最后将每次修改的内容（12位）拼接在一起，几位最终的密钥：</p>
+<p>第一次：17FB6F0AA3BD</p>
+<p>第二次：1EFB6F0AA3BD</p>
+<p>第三次：7522B8C906D3</p>
+<p>第四次：7C24B5A7CB3F</p>
+<p>第五次：7D24B5A7CB3D</p>
+<p>第六次：7824B5A7CB3D</p>
+<p>即最后的 key 值为：17FB6F0AA3BD1EFB6F0AA3BD7522B8C906D37C24B5A7CB3F7D24B5A7CB3D7824B5A7CB3D</p>
+<p>最后，取消所有断点，在打印success代码后打断电，观察结果：</p>
+<p><img src="/api/images/T92HAM0URjNW/image.png"></p>
+<p>即为答案。</p>
+<h2 id="反汇编："><a href="#反汇编：" class="headerlink" title="反汇编："></a>反汇编：</h2><p>用<code>ida.exe</code>进入该程序，快捷键F5，查看反汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">int __cdecl main_0(int argc, const char **argv, const char **envp)  </span><br><span class="line">&#123;  </span><br><span class="line"> _DWORD *v3; // esi  </span><br><span class="line"> __int64 v4; // rax  </span><br><span class="line"> unsigned int v5; // ebx  </span><br><span class="line"> unsigned int v6; // eax  </span><br><span class="line"> _DWORD *v7; // edx  </span><br><span class="line"> unsigned int v8; // edi  </span><br><span class="line"> int v9; // ecx  </span><br><span class="line"> _DWORD *v10; // eax  </span><br><span class="line"> _DWORD *v11; // eax  </span><br><span class="line"> _DWORD *v12; // eax  </span><br><span class="line"> _DWORD *v13; // eax  </span><br><span class="line"> _BYTE *v14; // edx  </span><br><span class="line"> char v16; // [esp-10h] [ebp-80h]  </span><br><span class="line"> char v17; // [esp-4h] [ebp-74h]  </span><br><span class="line"> char v18; // [esp+0h] [ebp-70h]  </span><br><span class="line"> unsigned int v19; // [esp+10h] [ebp-60h]  </span><br><span class="line"> int v20; // [esp+24h] [ebp-4Ch]  </span><br><span class="line"> int v21; // [esp+28h] [ebp-48h]  </span><br><span class="line"> int v22; // [esp+2Ch] [ebp-44h]  </span><br><span class="line"> int v23; // [esp+30h] [ebp-40h]  </span><br><span class="line"> void *Block; // [esp+34h] [ebp-3Ch] BYREF  </span><br><span class="line"> int v25; // [esp+38h] [ebp-38h]  </span><br><span class="line"> int v26; // [esp+3Ch] [ebp-34h]  </span><br><span class="line"> int Buffer[4]; // [esp+40h] [ebp-30h] BYREF  </span><br><span class="line"> char Arglist[16]; // [esp+50h] [ebp-20h] BYREF  </span><br><span class="line"> int v29; // [esp+6Ch] [ebp-4h]</span><br><span class="line"></span><br><span class="line"> sub_4010AA(&amp;Block);  </span><br><span class="line"> v29 = 0;  </span><br><span class="line"> sub_401177(&quot;input the student id: &quot;, v17);  </span><br><span class="line"> sub_401041(&quot;%13s&quot;, (char)Arglist);  </span><br><span class="line"> sub_401177(&quot;input the key: &quot;, v16);  </span><br><span class="line"> v3 = malloc(12 * ((v25 - (int)Block) &gt;&gt; 3) + 1);  </span><br><span class="line"> sub_401041(&quot;%s&quot;, (char)v3);  </span><br><span class="line"> if ( !(unsigned __int8)sub_4015BE(v3, 12 * ((v25 - (int)Block) &gt;&gt; 3)) )  </span><br><span class="line">   goto LABEL_14;  </span><br><span class="line"> v4 = sub_401325(Arglist);  </span><br><span class="line"> v5 = v4;  </span><br><span class="line"> v6 = HIDWORD(v4);  </span><br><span class="line"> v7 = Block;  </span><br><span class="line"> v8 = 0;  </span><br><span class="line"> v19 = v6;  </span><br><span class="line"> if ( (v25 - (int)Block) &gt;&gt; 3 )  </span><br><span class="line"> &#123;  </span><br><span class="line">   v23 = __PAIR64__(v6, v5) &gt;&gt; 31;  </span><br><span class="line">   v22 = __PAIR64__(v6, v5) &gt;&gt; 30;  </span><br><span class="line">   v21 = __PAIR64__(v6, v5) &gt;&gt; 29;  </span><br><span class="line">   v20 = __PAIR64__(v6, v5) &gt;&gt; 28;  </span><br><span class="line">   v9 = 2 * v5;  </span><br><span class="line">   while ( 1 )  </span><br><span class="line">   &#123;  </span><br><span class="line">     v7[2 * v8] ^= v5;  </span><br><span class="line">     v7[2 * v8 + 1] ^= v6;  </span><br><span class="line">     v10 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= v9;  </span><br><span class="line">     v10[2 * v8 + 1] ^= v23;  </span><br><span class="line">     v11 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 4 * v5;  </span><br><span class="line">     v11[2 * v8 + 1] ^= v22;  </span><br><span class="line">     v12 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 8 * v5;  </span><br><span class="line">     v12[2 * v8 + 1] ^= v21;  </span><br><span class="line">     v13 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 16 * v5;  </span><br><span class="line">     v13[2 * v8 + 1] ^= v20;  </span><br><span class="line">     sub_4015EB((char *)Buffer, &quot;%012llX\n&quot;, *((_DWORD *)Block + 2 * v8));  </span><br><span class="line">     if ( Buffer[0] != *v3 || Buffer[1] != v3[1] || Buffer[2] != v3[2] )  </span><br><span class="line">       break;  </span><br><span class="line">     ++v8;  </span><br><span class="line">     v7 = Block;  </span><br><span class="line">     v3 += 3;  </span><br><span class="line">     v9 = 2 * v5;  </span><br><span class="line">     v6 = v19;  </span><br><span class="line">     if ( v8 &gt;= (v25 - (int)Block) &gt;&gt; 3 )  </span><br><span class="line">       goto LABEL_8;  </span><br><span class="line">   &#125;  </span><br><span class="line">LABEL_14:  </span><br><span class="line">   sub_401177(&quot;key error&quot;, v18);  </span><br><span class="line">   exit(0);  </span><br><span class="line"> &#125;  </span><br><span class="line">LABEL_8:  </span><br><span class="line"> sub_401177(&quot;success&quot;, v18);  </span><br><span class="line"> v14 = Block;  </span><br><span class="line"> if ( Block )  </span><br><span class="line"> &#123;  </span><br><span class="line">   if ( ((v26 - (_DWORD)Block) &amp; 0xFFFFFFF8) &gt;= 0x1000 )  </span><br><span class="line">   &#123;  </span><br><span class="line">     v14 = (_BYTE *)*((_DWORD *)Block - 1);  </span><br><span class="line">     if ( (unsigned int)((_BYTE *)Block - v14 - 4) &gt; 0x1F )  </span><br><span class="line">       invalid_parameter_noinfo_noreturn();  </span><br><span class="line">   &#125;  </span><br><span class="line">   sub_4010D7(v14);  </span><br><span class="line"> &#125;  </span><br><span class="line"> return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/05/21/upload_file/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          Upload & Restore file to your blog.
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
