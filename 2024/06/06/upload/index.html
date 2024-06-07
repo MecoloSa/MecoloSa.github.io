@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <meta name="author" content="Illias">
+
+
+  <meta name="subtitle" content="春日迟迟">
+
+
+  <meta name="description" content="记录大学学习生活">
+
+
+
+<title>Illias&#39; Blog</title>
+
+
+
+<link rel="icon" href="/favicon.png">
+
+
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/nprogress/nprogress.css">
+
+
+
+<script src="/lib/jquery.min.js"></script>
+
+
+<script src="/lib/iconify-icon.min.js"></script>
+
+
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+  };
+</script>
+
+
+<script src="/lib/nprogress/nprogress.js"></script>
+
+<script>
+  $(document).ready(() => {
+    NProgress.configure({
+      showSpinner: false,
+    });
+    NProgress.start();
+    $("#nprogress .bar").css({
+      background: "#de7441",
+    });
+    $("#nprogress .peg").css({
+      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
+    });
+    $("#nprogress .spinner-icon").css({
+      "border-top-color": "#de7441",
+      "border-left-color": "#de7441",
+    });
+    setTimeout(function () {
+      NProgress.done();
+      $(".fade").removeClass("out");
+    }, 800);
+  });
+</script>
+
+<script>
+  (function () {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+    if (setting === "dark" || (prefersDark && setting !== "light"))
+      document.documentElement.classList.toggle("dark", true);
+    let isDark = document.documentElement.classList.contains("dark");
+  })();
+
+  $(document).ready(function () {
+    // init icon
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isDark = document.documentElement.classList.contains("dark");
+    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+
+    function toggleGiscusTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const giscusFrame = document.querySelector("iframe.giscus-frame");
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          {
+            giscus: {
+              setConfig: {
+                theme: isDark ? "dark" : "light",
+              },
+            },
+          },
+          "https://giscus.app"
+        );
+      }
+    }
+
+
+    // toggle dark mode
+    function toggleDark() {
+      let isDark = document.documentElement.classList.contains("dark");
+      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+      isDark = !isDark;
+      document.documentElement.classList.toggle("dark", isDark);
+      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
+      if (prefersDark === isDark) {
+        localStorage.setItem("hexo-color-scheme", "auto");
+      } else {
+        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
+      }
+      toggleGiscusTheme();
+    }
+    $("#toggle-dark").click(toggleDark);
+
+    // listen dark mode change
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
+        if (setting === "auto") {
+          document.documentElement.classList.toggle("dark", e.matches);
+          $("#theme-icon").attr(
+            "icon",
+            e.matches ? "ri:moon-line" : "ri:sun-line"
+          );
+          toggleGiscusTheme();
+        }
+      });
+  });
+</script>
+
+
+
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
+  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
+  <div class="max-auto">
+    <nav class="flex items-center text-base">
+      <a href="/" class="group">
+        <h2 class="font-medium tracking-tighterp text-l p-2">
+          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Illias' Blog" />
+          Illias&#39; Blog
+        </h2>
+      </a>
+      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+        
+      </div>
+      <div class="flex-1"></div>
+      <div class="flex items-center gap-3">
+        
+          <a class="hidden sm:flex" href="/archives">Posts</a>
+        
+        
+          
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/MecoloSa">
+              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
+            </a>
+          
+            <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" target="_blank" rel="noopener" href="https://www.zhihu.com/people/65-3-92-7">
+              <iconify-icon width="20" icon="ri:zhihu-line"></iconify-icon>
+            </a>
+          
+        
+        <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" href="rss2.xml">
+          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
+        </a>
+        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
+          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
+        </a>
+      </div>
+      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
+        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
+          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
+        </span>
+        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
+          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
+        </span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
+  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
+    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
+      
+        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
+          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
+        </li>
+      
+    </ul>
+  </div>
+  <div class="mask bg-black/20 absolute inset-0"></div>
+</div>
+
+  <main class="pt-14">
+    <!-- css -->
+
+<link rel="stylesheet" href="/lib/fancybox/fancybox.min.css">
+
+
+<link rel="stylesheet" href="/lib/tocbot/tocbot.min.css">
+
+<!-- toc -->
+
+  <!-- tocbot -->
+<nav class="post-toc toc text-sm w-48 relative top-32 right-0 opacity-70 hidden lg:block" style="position: fixed !important;"></nav>
+
+
+<section class="px-6 max-w-prose mx-auto md:px-0">
+  <!-- header -->
+  <header class="overflow-hidden pt-6 pb-6 md:pt-12">
+    <div class="pt-4 md:pt-6">
+      <h1 id="article-title" class="text-[2rem] font-bold leading-snug mb-4 md:mb-6 md:text-[2.6rem]">
+        
+      </h1>
+      <div>
+        <section class="flex items-center gap-3 text-sm">
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="carbon-calendar" ></iconify-icon>
+            <time>2024-06-07</time>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="ic:round-access-alarm" ></iconify-icon>
+            <span>9 min</span>
+          </span>
+          <span class="text-gray-400">·</span>
+          <span class="flex items-center gap-1">
+            <iconify-icon width="18" icon="icon-park-outline:font-search" ></iconify-icon>
+            <span>2.1k words</span>
+          </span>
+          
+        </section>
+      </div>
+    </div>
+  </header>
+  <!-- content -->
+  <article class="post-content prose m-auto slide-enter-content dark:prose-invert">
+    <h1 id="浏览器取证工具开发报告"><a href="#浏览器取证工具开发报告" class="headerlink" title="浏览器取证工具开发报告"></a>浏览器取证工具开发报告</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本报告记录了基于 Python 的浏览器取证工具的过程，该工具用于从 Chrome 和 Firefox 浏览器中提取历史记录，并生成 PDF 格式的报告。主要包括环境设置、数据提取、数据分析及报告生成等关键步骤。利用此工具，我们可以有效地获取并分析浏览器的记录包含的信息，以便在取证分析中使用。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>随着互联网的普及，浏览器成为了用户访问互联网的主要工具，同时也是记录用户上网行为的重要工具。在数字取证中，浏览器历史记录可以提供有价值的线索。本项目的目标是开发一个工具，从 Chrome 和 Firefox 中提取用户的浏览历史，并生成易于阅读的 PDF 报告。</p>
+<h3 id="2-环境设置"><a href="#2-环境设置" class="headerlink" title="2. 环境设置"></a>2. 环境设置</h3><h4 id="2-1-开发环境"><a href="#2-1-开发环境" class="headerlink" title="2.1 开发环境"></a>2.1 开发环境</h4><ul>
+<li><strong>操作系统</strong>: Windows 10</li>
+<li><strong>编程语言</strong>: Python 3.8+</li>
+<li><strong>依赖库</strong>:<ul>
+<li><code>sqlite3</code>: 用于访问 SQLite 数据库。</li>
+<li><code>reportlab</code>: 用于生成 PDF 报告。</li>
+<li><code>pandas</code>: 用于数据分析和处理。</li>
+<li><code>argparse</code>: 用于命令行参数解析。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-2-安装依赖"><a href="#2-2-安装依赖" class="headerlink" title="2.2 安装依赖"></a>2.2 安装依赖</h4><p>确保已安装所有必要的 Python 库。使用以下命令安装依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install reportlab pandas</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-使用方法及成果展示"><a href="#3-使用方法及成果展示" class="headerlink" title="3.使用方法及成果展示"></a>3.使用方法及成果展示</h3><h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><p>在不知道如何使用的情况下，可以在终端中键入</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python evi_hw1.py -h</span><br></pre></td></tr></table></figure>
+
+<p>来获取帮助，执行需要两个参数——浏览器信息及生成pdf文件名称，默认生成在当前路径文件夹下。</p>
+<h3 id="4-数据提取"><a href="#4-数据提取" class="headerlink" title="4. 数据提取"></a>4. 数据提取</h3><p>浏览器历史记录通常存储在 SQLite 数据库中。Chrome 和 Firefox 都使用这种格式存储历史记录。因此，我们可以使用 <code>sqlite3</code> 库来访问这些数据库。</p>
+<h4 id="4-1-关闭浏览器"><a href="#4-1-关闭浏览器" class="headerlink" title="4.1 关闭浏览器"></a>4.1 关闭浏览器</h4><p>为了避免文件锁定问题，我们需要在提取数据之前确保浏览器已关闭。使用 <code>subprocess</code> 模块关闭浏览器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">close_browser</span>(<span class="params">browser_name</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            result = subprocess.run([<span class="string">&#x27;tasklist&#x27;</span>], stdout=subprocess.PIPE, text=<span class="literal">True</span>)</span><br><span class="line">            <span class="keyword">if</span> browser_name <span class="keyword">in</span> result.stdout:</span><br><span class="line">                subprocess.run([<span class="string">&quot;taskkill&quot;</span>, <span class="string">&quot;/F&quot;</span>, <span class="string">&quot;/IM&quot;</span>, browser_name], check=<span class="literal">True</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;browser_name&#125;</span> 进程被关闭。&quot;</span>)</span><br><span class="line">                time.sleep(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;browser_name&#125;</span> 浏览器已全部关闭，程序将继续执行。&quot;</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">except</span> subprocess.CalledProcessError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;关闭浏览器时发生错误: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-2-提取-Chrome-历史记录"><a href="#4-2-提取-Chrome-历史记录" class="headerlink" title="4.2 提取 Chrome 历史记录"></a>4.2 提取 Chrome 历史记录</h4><h5 id="Chrome-历史记录的存储"><a href="#Chrome-历史记录的存储" class="headerlink" title="Chrome 历史记录的存储"></a>Chrome 历史记录的存储</h5><p>Chrome 的浏览历史记录存储在一个名为 <code>History</code> 的 SQLite 数据库文件中，通常位于用户目录的 <code>AppData</code> 文件夹下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\&lt;username&gt;\AppData\Local\Google\Chrome\User Data\Default\History</span><br></pre></td></tr></table></figure>
+
+<h5 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h5><p>为了提取 Chrome 历史记录，我们需要首先关闭 Chrome 浏览器，因为它会锁定 <code>History</code> 文件，阻止其他程序访问。以下是主要步骤：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_chrome_history</span>():</span><br><span class="line">    close_browser(<span class="string">&#x27;chrome.exe&#x27;</span>)</span><br><span class="line">    time.sleep(<span class="number">2</span>)</span><br><span class="line">    history_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Local/Google/Chrome/User Data/Default/History&quot;</span></span><br><span class="line">    temp_history_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Local/Temp/History&quot;</span></span><br><span class="line">    shutil.copyfile(history_path, temp_history_path)</span><br><span class="line">    conn = sqlite3.connect(temp_history_path)</span><br><span class="line">    cursor = conn.cursor()</span><br><span class="line">    cursor.execute(<span class="string">&quot;SELECT url, title, visit_count, last_visit_time FROM urls&quot;</span>)</span><br><span class="line">    rows = cursor.fetchall()</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> [(row[<span class="number">0</span>], row[<span class="number">1</span>], row[<span class="number">2</span>], convert_chrome_time(row[<span class="number">3</span>])) <span class="keyword">for</span> row <span class="keyword">in</span> rows]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭浏览器</strong>: 调用 <code>close_browser(&#39;chrome.exe&#39;)</code> 关闭所有 Chrome 浏览器进程，避免文件被锁定。</li>
+<li><strong>等待</strong>: 使用 <code>time.sleep(2)</code> 确保进程完全关闭。</li>
+<li><strong>复制文件</strong>: 将 <code>History</code> 文件复制到临时目录，确保不影响原文件。</li>
+<li><strong>读取数据</strong>: 连接到临时文件的 SQLite 数据库，并执行查询以提取 URL、标题、访问次数和最后访问时间。</li>
+<li><strong>转换时间</strong>: 使用 <code>convert_chrome_time</code> 函数将 Chrome 的时间戳转换为标准日期时间格式。</li>
+</ul>
+<h4 id="4-3-提取-Firefox-历史记录"><a href="#4-3-提取-Firefox-历史记录" class="headerlink" title="4.3 提取 Firefox 历史记录"></a>4.3 提取 Firefox 历史记录</h4><h5 id="Firefox-历史记录的存储"><a href="#Firefox-历史记录的存储" class="headerlink" title="Firefox 历史记录的存储"></a>Firefox 历史记录的存储</h5><p>Firefox 的浏览历史记录存储在 <code>places.sqlite</code> 文件中，通常位于用户目录的 <code>AppData</code> 文件夹下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\&lt;username&gt;\AppData\Roaming\Mozilla\Firefox\Profiles\&lt;profile&gt;\places.sqlite</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>&lt;profile&gt;</code> 是用户的 Firefox 配置文件名，通常以 <code>.default-release</code> 或 <code>.default-release-1</code> 结尾。</p>
+<h5 id="代码解析-1"><a href="#代码解析-1" class="headerlink" title="代码解析"></a>代码解析</h5><p>为了提取 Firefox 历史记录，首先要确定当前用户的 Firefox 配置文件路径，并关闭 Firefox 浏览器。代码的主要步骤如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_firefox_history</span>():</span><br><span class="line">    close_browser(<span class="string">&#x27;firefox.exe&#x27;</span>)</span><br><span class="line">    time.sleep(<span class="number">2</span>)</span><br><span class="line">    profile_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Roaming/Mozilla/Firefox/Profiles/&quot;</span></span><br><span class="line">    profile_folders = os.listdir(profile_path)</span><br><span class="line">    profile_folder = [f <span class="keyword">for</span> f <span class="keyword">in</span> profile_folders <span class="keyword">if</span> f.endswith(<span class="string">&#x27;.default-release&#x27;</span>) <span class="keyword">or</span> f.endswith(<span class="string">&#x27;.default-release-1&#x27;</span>)][<span class="number">0</span>]</span><br><span class="line">    history_path = <span class="string">f&quot;<span class="subst">&#123;profile_path&#125;</span><span class="subst">&#123;profile_folder&#125;</span>/places.sqlite&quot;</span></span><br><span class="line">    conn = sqlite3.connect(history_path)</span><br><span class="line">    cursor = conn.cursor()</span><br><span class="line">    cursor.execute(<span class="string">&quot;SELECT url, title, visit_count, last_visit_date FROM moz_places&quot;</span>)</span><br><span class="line">    rows = cursor.fetchall()</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> [(row[<span class="number">0</span>], row[<span class="number">1</span>], row[<span class="number">2</span>], convert_firefox_time(row[<span class="number">3</span>])) <span class="keyword">for</span> row <span class="keyword">in</span> rows]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭浏览器</strong>: 调用 <code>close_browser(&#39;firefox.exe&#39;)</code> 关闭所有 Firefox 浏览器进程，避免文件被锁定。</li>
+<li><strong>选择配置文件夹</strong>: 从用户的 Firefox 配置文件目录中选择一个默认的配置文件夹，通常以 <code>.default-release</code> 结尾。</li>
+<li><strong>读取数据</strong>: 连接到 <code>places.sqlite</code> 文件的 SQLite 数据库，提取浏览记录数据。</li>
+<li><strong>转换时间</strong>: 使用 <code>convert_firefox_time</code> 函数将 Firefox 的时间戳转换为标准日期时间格式。</li>
+</ul>
+<h5 id="时间格式转换"><a href="#时间格式转换" class="headerlink" title="时间格式转换"></a>时间格式转换</h5><p>Chrome 和 Firefox 使用不同的时间戳格式。Chrome 的时间戳是自 1601 年以来的微秒数，Firefox 的时间戳是自 1970 年以来的微秒数。为了将这些时间戳转换为人类可读的日期，我们使用了以下函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">convert_chrome_time</span>(<span class="params">chrome_time</span>):</span><br><span class="line">    <span class="keyword">return</span> datetime.datetime(<span class="number">1601</span>, <span class="number">1</span>, <span class="number">1</span>) + datetime.timedelta(microseconds=chrome_time)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">convert_firefox_time</span>(<span class="params">firefox_time</span>):</span><br><span class="line">    <span class="keyword">return</span> datetime.datetime(<span class="number">1970</span>, <span class="number">1</span>, <span class="number">1</span>) + datetime.timedelta(microseconds=firefox_time)</span><br></pre></td></tr></table></figure>
+
+<p>这些函数将浏览器的时间戳转换为标准日期时间格式，便于后续的分析和报告生成。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def convert_chrome_time(chrome_time):</span><br><span class="line">    try</span><br><span class="line">        if chrome_time is None:</span><br><span class="line">    except OverflowError:</span><br><span class="line">        print(&quot;Invalid date value:&quot;, chrome_time)</span><br><span class="line">        return None</span><br><span class="line"></span><br><span class="line">def convert_firefox_time(firefox_time):</span><br><span class="line">    try:</span><br><span class="line">        if firefox_time is None:</span><br><span class="line">            return None</span><br><span class="line">        return datetime.datetime(1970, 1, 1) + datetime.timedelta(microseconds=firefox_time)</span><br><span class="line">    except OverflowError:</span><br><span class="line">        print(&quot;Invalid date value:&quot;, firefox_time)</span><br><span class="line">        return None</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-报告生成"><a href="#5-报告生成" class="headerlink" title="5. 报告生成"></a>5. 报告生成</h3><p>使用 <code>reportlab</code> 库生成 PDF 报告。报告中包括 URL、标题、访问次数和最后访问时间。</p>
+<h4 id="5-1-PDF-报告生成"><a href="#5-1-PDF-报告生成" class="headerlink" title="5.1 PDF 报告生成"></a>5.1 PDF 报告生成</h4><p>创建一个包含表格的 PDF 文件，以清晰地展示提取到的历史记录：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate_pdf_report</span>(<span class="params">data, filename</span>):</span><br><span class="line">    doc = SimpleDocTemplate(filename, pagesize=letter, rightMargin=<span class="number">30</span>, leftMargin=<span class="number">30</span>, topMargin=<span class="number">30</span>, bottomMargin=<span class="number">18</span>)</span><br><span class="line">    elements = []</span><br><span class="line">    </span><br><span class="line">    styles = getSampleStyleSheet()</span><br><span class="line">    table_style = TableStyle([</span><br><span class="line">        (<span class="string">&#x27;GRID&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">1</span>, colors.black),</span><br><span class="line">        (<span class="string">&#x27;FONTNAME&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;Helvetica&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;FONTSIZE&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">10</span>),</span><br><span class="line">        (<span class="string">&#x27;VALIGN&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;TOP&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;BACKGROUND&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, <span class="number">0</span>), colors.lightgrey),</span><br><span class="line">        (<span class="string">&#x27;TEXTCOLOR&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, <span class="number">0</span>), colors.whitesmoke),</span><br><span class="line">        (<span class="string">&#x27;ALIGN&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;LEFT&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;LEFTPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">6</span>),</span><br><span class="line">        (<span class="string">&#x27;RIGHTPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">6</span>),</span><br><span class="line">        (<span class="string">&#x27;TOPPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">3</span>),</span><br><span class="line">        (<span class="string">&#x27;BOTTOMPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">3</span>),</span><br><span class="line">    ])</span><br><span class="line">    </span><br><span class="line">    data_for_table = [[<span class="string">&#x27;URL&#x27;</span>, <span class="string">&#x27;Title&#x27;</span>, <span class="string">&#x27;Visits&#x27;</span>, <span class="string">&#x27;Last Visited&#x27;</span>]]</span><br><span class="line">    <span class="keyword">for</span> url, title, visits, last_visited <span class="keyword">in</span> data:</span><br><span class="line">        <span class="keyword">if</span> last_visited <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            last_visited = last_visited.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            last_visited = <span class="string">&#x27;Never&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> title <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            title = <span class="string">&quot;No title&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            title = Paragraph(title.encode(<span class="string">&#x27;latin1&#x27;</span>, <span class="string">&#x27;replace&#x27;</span>).decode(<span class="string">&#x27;latin1&#x27;</span>),styles[<span class="string">&#x27;Normal&#x27;</span>])  <span class="comment"># Handle encoding issues</span></span><br><span class="line">        shortened_url = shorten_url(url)</span><br><span class="line">        link = <span class="string">f&#x27;&lt;a href=&quot;<span class="subst">&#123;html.escape(url)&#125;</span>&quot;&gt;<span class="subst">&#123;html.escape(shortened_url)&#125;</span>&lt;/a&gt;&#x27;</span></span><br><span class="line">        data_for_table.append([Paragraph(link, styles[<span class="string">&#x27;Normal&#x27;</span>]), title, <span class="built_in">str</span>(visits), last_visited])</span><br><span class="line"></span><br><span class="line">    t = Table(data_for_table, colWidths=[<span class="number">2.7</span>*inch, <span class="number">1.8</span>*inch, <span class="number">0.7</span>*inch, <span class="number">1.8</span>*inch])</span><br><span class="line">    t.setStyle(table_style)</span><br><span class="line">    elements.append(t)</span><br><span class="line">    </span><br><span class="line">    doc.build(elements)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shorten_url</span>(<span class="params">url, max_length=<span class="number">50</span></span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(url) &lt;= max_length:</span><br><span class="line">        <span class="keyword">return</span> url</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> url[:max_length-<span class="number">3</span>] + <span class="string">&quot;...&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>为方便观察，将生成的 pdf 报告以表格的方式呈现，但是由于网站可能过长，表格第一栏与第二栏有时便不可避免地会发生越格现象，我通过</p>
+<ol>
+<li>合理的栏长度分配；</li>
+<li>精简 url 长度使得多余部分以省略号显示（在保证url信息不丢失的基础上）；</li>
+<li>将 title 包裹在<code>Paragraph</code>中，使其能够自动换行。</li>
+</ol>
+<p>解决了上述问题。</p>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>通过本次项目开发，我们成功创建了一个能够提取 Chrome 和 Firefox 浏览器历史记录的取证工具。该工具能够有效地提取用户的浏览历史，并生成 PDF 报告，为后续的取证分析提供了便利。本项目展示了使用 Python 进行数据提取和报告生成的过程，同时也为未来进一步开发和优化取证工具提供了良好的基础。</p>
+<hr>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ul>
+<li>Python 官方文档 <a target="_blank" rel="noopener" href="https://docs.python.org/3/">https://docs.python.org/3/</a></li>
+<li><code>sqlite3</code> 模块文档 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/sqlite3.html">https://docs.python.org/3/library/sqlite3.html</a></li>
+<li><code>reportlab</code> 库文档 <a target="_blank" rel="noopener" href="https://www.reportlab.com/docs/reportlab-userguide.pdf">https://www.reportlab.com/docs/reportlab-userguide.pdf</a></li>
+</ul>
+
+  </article>
+  <!-- tag -->
+  <div class="mt-12 pt-6 border-t border-gray-200">
+    
+  </div>
+  <!-- prev and next -->
+  <div class="flex justify-between mt-12 pt-6 border-t border-gray-200">
+    <div>
+      
+    </div>
+    <div>
+      
+        <a href="/2024/06/03/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/" class="text-sm text-gray-400 hover:text-gray-500 flex justify-center">
+          汇编期末报告
+          <iconify-icon width="20" icon="ri:arrow-right-s-line" data-inline="false"></iconify-icon>
+        </a>
+      
+    </div>
+  </div>
+  <!-- comment -->
+  <div class="article-comments mt-12">
+    
+
+  </div>
+</section>
+<!-- js inspect -->
+
+<script src="/lib/clipboard.min.js"></script>
+
+
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+  $(document).ready(() => {
+    const maraidConfig = {
+      theme: "default",
+      logLevel: 3,
+      flowchart: { curve: "linear" },
+      gantt: { axisFormat: "%m/%d/%Y" },
+      sequence: { actorMargin: 50 },
+    };
+    mermaid.initialize(maraidConfig);
+  });
+</script>
+
+
+
+<script src="/lib/fancybox/fancybox.umd.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+    $('.post-content').each(function(i){
+      $(this).find('img').each(function(){
+        if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+        var alt = this.alt;
+        if (alt) $(this).after('<span class="fancybox-alt">' + alt + '</span>');
+        $(this).wrap('<a class="fancybox-img" href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
+      });
+      $(this).find('.fancybox').each(function(){
+        $(this).attr('rel', 'article' + i);
+      });
+    });
+
+    Fancybox.bind('[data-fancybox="gallery"]', {
+        // options
+    })
+  })
+</script>
+
+<!-- tocbot begin -->
+
+<script src="/lib/tocbot/tocbot.min.js"></script>
+
+<script>
+  $(document).ready(() => {
+      tocbot.init({
+        // Where to render the table of contents.
+        tocSelector: '.post-toc',
+        // Where to grab the headings to build the table of contents.
+        contentSelector: '.post-content',
+        // Which headings to grab inside of the contentSelector element.
+        headingSelector: 'h1, h2, h3',
+        // For headings inside relative or absolute positioned containers within content.
+        hasInnerContainers: true,
+    });
+  })
+</script>
+<!-- tocbot end -->
+
+
+  </main>
+  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
+  <!-- busuanzi -->
+  
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<!-- Busuanzi Analytics -->
+<div class="flex items-center gap-2">
+  <span>Visitors</span>
+  <span id="busuanzi_value_site_uv"></span>
+  <span>Page Views</span>
+  <span id="busuanzi_value_site_pv"></span>
+</div>
+<!-- End Busuanzi Analytics -->
+
+
+  <!-- copyright -->
+  <div class="flex items-center gap-2">
+    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
+    <span>© 2022</span>
+    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
+    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
+  </div>
+  <!-- powered by -->
+  <div class="flex items-center gap-2">
+    <span>Powered by</span>
+    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
+    <span>&</span>
+    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  </div>
+
+</footer>
+
+  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
+    <span class="flex justify-center items-center text-sm">
+      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
+      <span id="scrollpercent"><span>0</span> %</span>
+    </span>
+  </div>
+  
+<script src="/js/main.js"></script>
+
+
+  <script>
+    $(document).ready(function () {
+      const mapleCount = "12";
+      const speed = "0.5";
+      const mapleEl = document.getElementById("maple");
+      const maples = Array.from({ length: mapleCount }).map(() => {
+        const maple = document.createElement("div");
+        const scale = Math.random() * 0.5 + 0.5;
+        const offset = Math.random() * 2 - 1;
+        const x = Math.random() * mapleEl.clientWidth;
+        const y = -Math.random() * mapleEl.clientHeight;
+        const duration = 10 / speed;
+        const delay = -duration;
+        maple.className = "maple";
+        maple.style.width = `${24 * scale}px`;
+        maple.style.height = `${24 * scale}px`;
+        maple.style.left = `${x}px`;
+        maple.style.top = `${y}px`;
+        maple.style.setProperty("--maple-fall-offset", offset);
+        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
+        maple.style.animation = `fall ${duration}s linear infinite`;
+        maple.style.animationDelay = `${delay}s`;
+        mapleEl.appendChild(maple)
+        return maple
+      })
+    });
+  </script>
+  
+
+
+  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
+</body>
+
+</html>
