@@ -109,7 +109,6 @@
       }
     }
 
-
     // toggle dark mode
     function toggleDark() {
       let isDark = document.documentElement.classList.contains("dark");
@@ -124,7 +123,6 @@
       }
       toggleGiscusTheme();
     }
-    $("#toggle-dark").click(toggleDark);
 
     // listen dark mode change
     window
@@ -140,6 +138,46 @@
           toggleGiscusTheme();
         }
       });
+
+    $("#toggle-dark").click((event) => {
+      const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (!isAppearanceTransition) {
+        toggleDark()
+        return
+      }
+      const x = event.clientX
+      const y = event.clientY
+      const endRadius = Math.hypot(
+        Math.max(x, innerWidth - x),
+        Math.max(y, innerHeight - y),
+      )
+      const transition = document.startViewTransition(async () => {
+        toggleDark()
+      })
+
+      transition.ready
+        .then(() => {
+          const isDark = document.documentElement.classList.contains("dark")
+          const clipPath = [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${endRadius}px at ${x}px ${y}px)`,
+          ]
+          document.documentElement.animate(
+            {
+              clipPath: isDark
+                ? [...clipPath].reverse()
+                : clipPath,
+            },
+            {
+              duration: 400,
+              easing: 'ease-out',
+              pseudoElement: isDark
+                ? '::view-transition-old(root)'
+                : '::view-transition-new(root)',
+            },
+          )
+        })
+    });
   });
 </script>
 
@@ -167,16 +205,12 @@
         
         
           
-            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/MecoloSa">
+            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/xbmlz">
               <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
             </a>
           
-            <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" target="_blank" rel="noopener" href="https://www.zhihu.com/people/65-3-92-7">
-              <iconify-icon width="20" icon="ri:zhihu-line"></iconify-icon>
-            </a>
-          
         
-        <a class="w-5 h-5 hidden sm:flex" title="ZhiHu" href="rss2.xml">
+        <a class="w-5 h-5 hidden sm:flex" title="Github" href="rss2.xml">
           <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
         </a>
         <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
@@ -416,7 +450,7 @@
 
   <script>
     $(document).ready(function () {
-      const mapleCount = "12";
+      const mapleCount = "10";
       const speed = "0.5";
       const mapleEl = document.getElementById("maple");
       const maples = Array.from({ length: mapleCount }).map(() => {
