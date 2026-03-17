@@ -1,484 +1,1010 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-  <meta charset="UTF-8">
-
-
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-
-  <meta name="author" content="Illias">
-
-
-  <meta name="subtitle" content="春日迟迟">
-
-
+  <meta charset="utf-8">
+  
+  
+  <title>Illias&#39; Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="记录大学学习生活">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Illias&#39; Blog">
+<meta property="og:url" content="https://mecolosa.github.io/index.html">
+<meta property="og:site_name" content="Illias&#39; Blog">
+<meta property="og:description" content="记录大学学习生活">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Illias">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Illias' Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="css/style.css">
 
+  
+    
+<link rel="stylesheet" href="fancybox/jquery.fancybox.min.css">
 
-
-<title>Illias&#39; Blog</title>
-
-
-
-<link rel="icon" href="/favicon.png">
-
-
-
-<link rel="stylesheet" href="css/main.css">
-
-
-<link rel="stylesheet" href="lib/nprogress/nprogress.css">
-
-
-
-<script src="lib/jquery.min.js"></script>
-
-
-<script src="lib/iconify-icon.min.js"></script>
-
-
-<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-<script>
-  tailwind.config = {
-    darkMode: "class",
-  };
-</script>
-
-
-<script src="lib/nprogress/nprogress.js"></script>
-
-<script>
-  $(document).ready(() => {
-    NProgress.configure({
-      showSpinner: false,
-    });
-    NProgress.start();
-    $("#nprogress .bar").css({
-      background: "#de7441",
-    });
-    $("#nprogress .peg").css({
-      "box-shadow": "0 0 2px #de7441, 0 0 4px #de7441",
-    });
-    $("#nprogress .spinner-icon").css({
-      "border-top-color": "#de7441",
-      "border-left-color": "#de7441",
-    });
-    setTimeout(function () {
-      NProgress.done();
-      $(".fade").removeClass("out");
-    }, 800);
-  });
-</script>
-
-<script>
-  (function () {
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const setting = localStorage.getItem("hexo-color-scheme") || "auto";
-    if (setting === "dark" || (prefersDark && setting !== "light"))
-      document.documentElement.classList.toggle("dark", true);
-    let isDark = document.documentElement.classList.contains("dark");
-  })();
-
-  $(document).ready(function () {
-    // init icon
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = document.documentElement.classList.contains("dark");
-    $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
-
-    function toggleGiscusTheme() {
-      const isDark = document.documentElement.classList.contains("dark");
-      const giscusFrame = document.querySelector("iframe.giscus-frame");
-      if (giscusFrame) {
-        giscusFrame.contentWindow.postMessage(
-          {
-            giscus: {
-              setConfig: {
-                theme: isDark ? "dark" : "light",
-              },
-            },
-          },
-          "https://giscus.app"
-        );
-      }
-    }
-
-    // toggle dark mode
-    function toggleDark() {
-      let isDark = document.documentElement.classList.contains("dark");
-      const setting = localStorage.getItem("hexo-color-scheme") || "auto";
-      isDark = !isDark;
-      document.documentElement.classList.toggle("dark", isDark);
-      $("#theme-icon").attr("icon", isDark ? "ri:moon-line" : "ri:sun-line");
-      if (prefersDark === isDark) {
-        localStorage.setItem("hexo-color-scheme", "auto");
-      } else {
-        localStorage.setItem("hexo-color-scheme", isDark ? "dark" : "light");
-      }
-      toggleGiscusTheme();
-    }
-
-    // listen dark mode change
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (e) => {
-        const setting = localStorage.getItem("hexo-color-scheme") || "auto";
-        if (setting === "auto") {
-          document.documentElement.classList.toggle("dark", e.matches);
-          $("#theme-icon").attr(
-            "icon",
-            e.matches ? "ri:moon-line" : "ri:sun-line"
-          );
-          toggleGiscusTheme();
-        }
-      });
-
-    $("#toggle-dark").click((event) => {
-      const isAppearanceTransition = document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (!isAppearanceTransition) {
-        toggleDark()
-        return
-      }
-      const x = event.clientX
-      const y = event.clientY
-      const endRadius = Math.hypot(
-        Math.max(x, innerWidth - x),
-        Math.max(y, innerHeight - y),
-      )
-      const transition = document.startViewTransition(async () => {
-        toggleDark()
-      })
-
-      transition.ready
-        .then(() => {
-          const isDark = document.documentElement.classList.contains("dark")
-          const clipPath = [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${endRadius}px at ${x}px ${y}px)`,
-          ]
-          document.documentElement.animate(
-            {
-              clipPath: isDark
-                ? [...clipPath].reverse()
-                : clipPath,
-            },
-            {
-              duration: 400,
-              easing: 'ease-out',
-              pseudoElement: isDark
-                ? '::view-transition-old(root)'
-                : '::view-transition-new(root)',
-            },
-          )
-        })
-    });
-  });
-</script>
-
-
-
-
+  
+  
 <meta name="generator" content="Hexo 7.2.0"></head>
-<body class="font-sans bg-white dark:bg-zinc-900 text-gray-700 dark:text-gray-200 relative">
-  <header class="fixed w-full px-5 py-1 z-10 backdrop-blur-xl backdrop-saturate-150 border-b border-black/5">
-  <div class="max-auto">
-    <nav class="flex items-center text-base">
-      <a href="/" class="group">
-        <h2 class="font-medium tracking-tighterp text-l p-2">
-          <img class="w-5 mr-2 inline-block transition-transform group-hover:rotate-[30deg]" id="logo" src="/images/logo.svg" alt="Illias' Blog" />
-          Illias&#39; Blog
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="index.html" id="logo">Illias&#39; Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="index.html" id="subtitle">春日迟迟</a>
         </h2>
-      </a>
-      <div id="header-title" class="opacity-0 md:ml-2 md:mt-[0.1rem] text-xs font-medium whitespace-nowrap overflow-hidden overflow-ellipsis">
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
         
+          <a class="main-nav-link" href="index.html">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS 订阅"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="搜索"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://mecolosa.github.io"></form>
       </div>
-      <div class="flex-1"></div>
-      <div class="flex items-center gap-3">
-        
-          <a class="hidden sm:flex" href="/archives">Posts</a>
-        
-        
-          
-            <a class="w-5 h-5 hidden sm:flex" title="Github" target="_blank" rel="noopener" href="https://github.com/xbmlz">
-              <iconify-icon width="20" icon="ri:github-line"></iconify-icon>
-            </a>
-          
-        
-        <a class="w-5 h-5 hidden sm:flex" title="Github" href="rss2.xml">
-          <iconify-icon width="20" icon="ri:rss-line"></iconify-icon>
-        </a>
-        <a class="w-5 h-5" title="toggle theme" id="toggle-dark">
-          <iconify-icon width="20" icon="" id="theme-icon"></iconify-icon>
-        </a>
-      </div>
-      <div class="flex items-center justify-center gap-3 ml-3 sm:hidden">
-        <span class="w-5 h-5" aria-hidden="true" role="img" id="open-menu">
-          <iconify-icon width="20" icon="carbon:menu" ></iconify-icon>
-        </span>
-        <span class="w-5 h-5 hidden" aria-hidden="true" role="img" id="close-menu">
-          <iconify-icon  width="20" icon="carbon:close" ></iconify-icon>
-        </span>
-      </div>
-    </nav>
+    </div>
   </div>
 </header>
-<div id="menu-panel" class="h-0 overflow-hidden sm:hidden fixed left-0 right-0 top-12 bottom-0 z-10">
-  <div id="menu-content" class="relative z-20 bg-white/80 px-6 sm:px-8 py-2 backdrop-blur-xl -translate-y-full transition-transform duration-300">
-    <ul class="nav flex flex-col sm:flex-row text-sm font-medium">
-      
-        <li class="nav-portfolio sm:mx-2 border-b sm:border-0 border-black/5 last:border-0 hover:text-main">
-          <a href="/archives" class="flex h-12 sm:h-auto items-center">Posts</a>
-        </li>
-      
-    </ul>
-  </div>
-  <div class="mask bg-black/20 absolute inset-0"></div>
-</div>
 
-  <main class="pt-14">
-    <section class="px-6 max-w-prose mx-auto gap-12 grid grid-cols-1">
-  <div class="flex flex-col h-48 items-center justify-center">
-    
-      <h1 class="site-title text-4xl leading-relaxed">
-        Illias&#39; Blog
-      </h1>
-      <p class="text-gray-500 mt-2">
-        春日迟迟
-      </p>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Sichuan_Universe" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2026/03/17/Sichuan_Universe/" class="article-date">
+  <time class="dt-published" datetime="2026-03-16T16:00:00.000Z" itemprop="datePublished">2026-03-17</time>
+</a>
     
   </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2026/03/17/Sichuan_Universe/">四川旅游和四川大学</a>
+    </h1>
   
-    
-    
-      <div class="relative pointer-events-none">
-        <span class="text-9xl opacity-10 absolute -left-11 -top-6 font-bold">2026</span>
-      </div>
-    
-    <a style="--stagger:0" href="2026/03/17/Sichuan_Universe/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          四川旅游和四川大学
-        </h2>
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          3月 17
-          ·
-          5 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>回顾一下外地学生来<strong>川大</strong>的三年，有想了解<strong>四川值得旅游的地方</strong>或者川大，可以看看小夏的文章，因为写下此篇有一部分原因也是纪念，所以也会有些碎碎念( •ᴗ• )ﾉ♡。</p>
+<hr>
+<h2 id="第一章-川大（对川大不感兴趣可以直接跳到下一章）"><a href="#第一章-川大（对川大不感兴趣可以直接跳到下一章）" class="headerlink" title="第一章 川大（对川大不感兴趣可以直接跳到下一章）"></a>第一章 川大（对川大不感兴趣可以直接跳到下一章）</h2><p>作为2022级本科生，虽然听说川大的入学通知书是一年比一年好，但是和同级的多数人一样，我们也为川大准备的卷轴的方式十分满意，以至于报道的时候大家都带着整个卷轴，结果被入学欢迎的辅导员笑话了(T_T)。</p>
+<img src="2026/03/17/Sichuan_Universe/5121d39c88252ab19974543a1dfb1ea3-1773717094837-1.jpg" class="5121d39c88252ab19974543a1dfb1ea3">
+
+<p>川大大部分学生前两年一定都在江安生活，可以说虽然江安并不在市中心，但其他方面（包括但不限于<strong>消费水平</strong>、<strong>宿舍条件</strong>、<strong>学校建设</strong>、<strong>食堂</strong>在所有校区里都是比较顶的存在）。</p>
+<p>由于小夏的专业是四年江安，但是毕竟是自己的母校，小夏还是偶尔趁着志愿等机会去其他校区逛了逛。接下来的几年时间里，我都在探索川大的各个地方，也偶尔在上课或者自习路上（这并不意味着小夏学习很好，不然这个帖子就是xxx经验贴了<strong>^-﹏-^ ੭</strong>）拍下一些自己当时觉得很好看的照片。</p>
+<h3 id="江安校区"><a href="#江安校区" class="headerlink" title="江安校区"></a>江安校区</h3><p>第一张拍川大景色的照片，是夜晚的江安河，拍的并不算好，画质也比较模糊，但是现在看来感觉承载小夏的期望似的，所以还是搬出来。</p>
+<img src="2026/03/17/Sichuan_Universe/3ba4a9868bcd2f506f0cd4ef3f18125b-1773392062945-4.jpg" class="3ba4a9868bcd2f506f0cd4ef3f18125b">
+
+<p>小夏由于不愿意离家太近，想体验一下不同的生活，沿海很好的学校分数不够好的专业，所以选择了来西南侧名声赫赫的川大，开始一段时间也很不适应，也从来没长期住宿过，并且有相当一段时间（当然也有专业课程太满的原因）沉浸在和高中一样的模式中，只不过周末沉迷于各种游戏的机会</p>
+<p>犹记得刚入学的一年，明远湖（长桥下）里还有两只黑天鹅，现在虽然它们不见了，但是江安校区的生态还是非常多样的，见过很多种不同类的鸟，但是小夏只认识夜鹭、野鸭、白鹭等，更不用说沿湖的植物了</p>
+<img src="2026/03/17/Sichuan_Universe/0e0350da66651c1230af6ffd8fd01475-1773390482236-11.jpg" class="0e0350da66651c1230af6ffd8fd01475">
+
+<p>综合楼边的水潭，和江安河一样，偶尔能见到钓鱼佬</p>
+<img src="2026/03/17/Sichuan_Universe/cce9682aa04e74e0105c1a324855c5c3-1773390490457-13.jpg" class="cce9682aa04e74e0105c1a324855c5c3">
+
+<p>另外，我习惯偶尔在不同的学院建筑里自习，调调生活的味道，在建环楼探索的时候发现有一处<strong>power椅</strong>，在上面可以静静地看楼下小路三三两两的行人，以及（郭）沫（若）溪（好像是这个名字）边的景色</p>
+<img src="2026/03/17/Sichuan_Universe/686599cc00b6ee214ffe99c1107155be-1773390499455-15.jpg" class="686599cc00b6ee214ffe99c1107155be">
+
+<p>当时看到毕业来拍照片的学长学姐们，虽然也畅想了一下，但是还是觉得是一件很遥远的事情，看着他们分散在学校各处的身影，看着他们之间的攀谈，也会猜测他们的感受，但是也只能看到对着镜头的微笑，那个时候的我觉得，毕业是一件很美好的事情，想象着万千朵花在这一刻绽放，随后飘落到河流中，小夏现在似乎离这条河流已经不远了</p>
+<img src="2026/03/17/Sichuan_Universe/6d337aa0a4bab3f38e15dffa43a3e4df-1773390513200-17.jpg" class="6d337aa0a4bab3f38e15dffa43a3e4df">
+
+<p>另外，图中绿色的是夏天的银杏，虽然望江校区的银杏更有名，但是江安不高山（现在没了）边的银杏也很漂亮</p>
+<p>这是明远湖边，与人来人往的大路隔着一层绿化的小道，上面有两把江安典型的木椅，在其中一个旁边拍到的长桥与水上报告厅，照片是<strong>矢车菊</strong>，如果没记错的话这种花在二三月就会开放，最晚的还能在下半年见到，后来碰到了喜欢的人，ta很喜欢这种花，不知道为什么</p>
+<img src="2026/03/17/Sichuan_Universe/ea8c1a69db5b6c260066f2fe8df856c4-1773390523118-19.jpg" class="ea8c1a69db5b6c260066f2fe8df856c4">
+
+<p>照片中它五颜六色，肆意绽放</p>
+<p>然后也是明远湖的另一隅，图书馆正对面，小夏也捡起了很久很久没联系过的乐器，虽然现在还在实习，但是已经忍不住快点回去趁最后几个月再练几回(๑˃ᴗ˂)ﻭ</p>
+<img src="2026/03/17/Sichuan_Universe/411ef713a8b555f770081ffd3a50a400-1773390538000-21.jpg" class="411ef713a8b555f770081ffd3a50a400">
+
+<p>在白石桥沿河练习乐器或者合唱、排练等似乎已经成了大家心照不宣的共识，几乎在任何路过白石桥的夜，都会听到话剧社的排练或是小提琴、笛子悠扬的乐声，小夏本来不是个喜欢喝酒的人，但是由于氛围和某人的原因，偶尔和朋友一起带点桌游，来到这附近的草坪上，若适逢傍晚，便再填些小酒，确实令人沉醉</p>
+<p>再看看远处的明远湖，可以从这张图感受到江安的整体氛围，说它拥有一片公园也绝不为过。在取景地附近能看到很多汀洲，只有野鸭能踏足的小洲上面长满了各类类似苇的植物，还能隐约在这些岸边看到布满羽毛的“鸭子窝”</p>
+<img src="2026/03/17/Sichuan_Universe/f43963a55553267b1b58e86fa37163ef-1773390549383-23.jpg" class="f43963a55553267b1b58e86fa37163ef">
+
+<p>下面是法学院楼边的玫瑰，这里一楼有个咖啡馆，也推荐大家偶尔做客，虽然小夏没喝过，但是附近静谧的氛围令人安心</p>
+<img src="2026/03/17/Sichuan_Universe/fb2264adaf461d8241c7870830644539-1773390563066-25.jpg" class="fb2264adaf461d8241c7870830644539">
+
+<p>以及青春广场冬天的花</p>
+<img src="2026/03/17/Sichuan_Universe/fd3d5470c71cb0a6b9a2fda72d4acb64-1773390575034-27.jpg" class="fd3d5470c71cb0a6b9a2fda72d4acb64">
+
+<p>一教A座的典型教室</p>
+<img src="2026/03/17/Sichuan_Universe/6199b5afef1bb40bc16eba0f51cf6003-1773390588012-29.jpg" class="6199b5afef1bb40bc16eba0f51cf6003">
+
+<p>和通往多学科交叉综合楼（网安楼&#x2F;空天楼）路上必须品尝的学长学姐们，真的很乖！(*¯︶¯*)</p>
+<img src="2026/03/17/Sichuan_Universe/ff6f4bcf1e843061435d449fb9e51ba3-1773390595394-31.jpg" class="ff6f4bcf1e843061435d449fb9e51ba3">
+
+<p>以及小夏参加的社团活动，用自己采集的树叶拓印做的扇子</p>
+<img src="2026/03/17/Sichuan_Universe/8d691548820638b42107d12bf5e6e487-1773390610716-33.jpg" class="8d691548820638b42107d12bf5e6e487">
+
+<h3 id="望江-华西校区"><a href="#望江-华西校区" class="headerlink" title="望江&amp;华西校区"></a>望江&amp;华西校区</h3><p>相比于江安，华西和望江的风格则更古朴，少了一些看起来宏伟的现代建筑，而用自己的历史底蕴来弥合。</p>
+<h4 id="华西校区"><a href="#华西校区" class="headerlink" title="华西校区"></a>华西校区</h4><p>华西钟楼，观鸟者聚集地</p>
+<img src="2026/03/17/Sichuan_Universe/bad1c5beaac78ef3835894bdf041ab6b-1773390623485-35.jpg" class="bad1c5beaac78ef3835894bdf041ab6b">
+
+<p>其它的都拍的太丑了（＞д＜），就不放在博客上了</p>
+<h4 id="望江校区"><a href="#望江校区" class="headerlink" title="望江校区"></a>望江校区</h4><p>望江角落里一个遗弃已久的老头乐，小夏有时喜欢拍摄这些废弃的现代化造物</p>
+<img src="2026/03/17/Sichuan_Universe/91c3456d34c7b09edeaf75004017e8e4-1773390634723-37.jpg" class="91c3456d34c7b09edeaf75004017e8e4">
+
+<p>体育馆边停车场的三角梅</p>
+<img src="2026/03/17/Sichuan_Universe/79e0e5fc344421cd4380c073eac72836-1773390640005-39.jpg" class="79e0e5fc344421cd4380c073eac72836">
+
+<p>望江经典大红门</p>
+<img src="2026/03/17/Sichuan_Universe/8147c03f6aa23d988d71e8878077a621-1773390647662-41.jpg" class="8147c03f6aa23d988d71e8878077a621">
+
+<p>望江基教（应该是x_x）的毕业</p>
+<img src="2026/03/17/Sichuan_Universe/ec215447349f33ec6d5ebc756bd5e94b-1773390653888-43.jpg" class="ec215447349f33ec6d5ebc756bd5e94b">
+
+
+
+<h2 id="成都周边景点推荐"><a href="#成都周边景点推荐" class="headerlink" title="成都周边景点推荐"></a>成都周边景点推荐</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2026/03/17/Sichuan_Universe/" data-id="cmmu7h3q40003a0cf39fm2up9" data-title="四川旅游和四川大学" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-汇编期末" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/06/09/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/" class="article-date">
+  <time class="dt-published" datetime="2024-06-08T16:00:00.000Z" itemprop="datePublished">2024-06-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-      <div class="relative pointer-events-none">
-        <span class="text-9xl opacity-10 absolute -left-11 -top-6 font-bold">2024</span>
-      </div>
-    
-    <a style="--stagger:1" href="2024/06/09/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          汇编期末报告
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/06/09/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/">汇编期末报告</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          6月 09
-          ·
-          6 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="第一个jz向上为第一部分，要让程序输出-“success”的分析："><a href="#第一个jz向上为第一部分，要让程序输出-“success”的分析：" class="headerlink" title="第一个jz向上为第一部分，要让程序输出 “success”的分析："></a>第一个jz向上为第一部分，要让程序输出 “success”的分析：</h2>
+
+<p><strong>输入读取</strong>:</p>
+<ul>
+<li>用户输入学生 ID 和密钥。这些输入通过 <code>sub_3A1041</code> 函数读取，该函数可能是封装了 <code>scanf</code> 或类似功能的自定义函数。</li>
+</ul>
+<p><strong>内存分配和键值处理</strong>:</p>
+<ul>
+<li>使用 <code>malloc</code> 分配内存，大小取决于 <code>(var_38 - Block) / 8 * 12</code>。这个计算涉及到一些变量，可能是基于输入的长度或者类似参数。</li>
+<li>输入的“键”被读取到分配的内存中。</li>
+</ul>
+<p><strong>数据处理和比较</strong>:</p>
+<ul>
+<li>代码执行了一系列的 <code>xor</code> 和 <code>shld</code> 操作。这些操作在内存块中进行，可能是执行某种加密或数据转换。</li>
+<li>之后，内存区域的内容被与另一部分的内容进行比较。如果所有比较都相等 (<code>jnz loc_3A7C15</code> 未被执行)，则继续执行。</li>
+</ul>
+<p><strong>循环处理</strong>:</p>
+<ul>
+<li><code>xor</code> 操作在一个循环中重复，这个循环基于一个计算得到的次数进行。循环的次数是 <code>(var_38 - Block) / 8</code>，同样可能基于输入长度。</li>
+</ul>
+<p><strong>成功条件</strong>:</p>
+<ul>
+<li>如果所有 <code>xor</code> 操作后的比较都相等，且没有跳转到 <code>loc_3A7C15</code>，则会执行到打印 “success” 的代码行。</li>
+<li>在打印 “success” 之前，还会检查 <code>Block</code> 指针是否非空，这可能是为了确认之前的操作或内存分配是否成功。</li>
+</ul>
+<p>推测输入值 “2022141530151” 处理流程：</p>
+<p><strong>输入处理</strong>:</p>
+<ul>
+<li>首先，代码提示用户输入学生 ID，假设输入 “2022141530151”。这个 ID 被存储在一个由 <code>lea eax, [ebp+Arglist]</code> 和 <code>push eax</code> 指向的缓冲区内，与格式字符串 <code>&quot;%13s&quot;</code> 一起被 <code>sub_3A1041</code> 使用，这个函数在进行进行字符串的读取。</li>
+</ul>
+<p><strong>内存分配</strong>:</p>
+<ul>
+<li>接下来代码进行内存分配，这部分涉及到 <code>var_38</code> 和 <code>Block</code> 这两个变量。具体的大小计算是 <code>(var_38 - Block) / 8 * 12</code>，然后调用 <code>malloc</code>。通过查阅源码 ，发现<code>var_38</code> 大小为 <code>0x38</code>， <code>Block</code>大小为<code>0x3C</code> 的初始值。这个大小计算可能基于你的输入长度或其他因素。</li>
+</ul>
+<p><strong>键值读取</strong>:</p>
+<ul>
+<li>然后程序再次提示输入，这次是输入“键”。这个键值也被读取并存储，用来进行后续的数据比较或加密&#x2F;解密操作。</li>
+</ul>
+<p><strong>数据处理</strong>:</p>
+<ul>
+<li>程序执行一系列的 <code>xor</code> 和 <code>shld</code> 指令，这些可能是对数据进行某种形式的处理。这个处理可能依赖于输入的“键”和“ID”的特定属性。</li>
+</ul>
+<p><strong>比较逻辑</strong>:</p>
+<ul>
+<li>处理后的数据被与一些预设值进行比较。所有这些比较都必须成功（即相等），程序流程才会继续向前。</li>
+</ul>
+<p><strong>成功输出</strong>:</p>
+<ul>
+<li>如果所有条件满足（即所有比较都通过），程序最终会输出 “success”。</li>
+</ul>
+<p>观察到，<code>loc_3A7BB1</code> 对应着success输出，前面有 <code>jz loc_3A7BB1</code> 汇编能够跳转（EFLAGS 寄存器 的 PSW 标志为0则跳转），从此处切入。</p>
+<p>Shift + F12查看字符串长度，锁定输入长度为 72 位，此时第一次 jz 之前 al 为 0x1 ，不会跳转到key error。</p>
+
+
+<p>假设输入 1*72，动调查看</p>
+
+
+<p>通过以上初步检查与分析，初步判定上述汇编代码为对我的输入进行一系列异或操作，形成密钥，并未涉及密钥的检查部分。</p>
+<h3 id="定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到-F9继续执行"><a href="#定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到-F9继续执行" class="headerlink" title="定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到(F9继续执行)"></a>定位到cmp函数，打下断点，通过第一次检查后，第一次每次进行到(F9继续执行)</h3>
+
+<p>时，为了通过每轮密钥检查，参考以下部分进行修改(F7单步执行)：</p>
+
+
+<p>将 RSI 中（用户输入的值）修改为其将要比较的对象，即 RCX 中存储的值，每次用此方法进行检查绕过，最后将每次修改的内容（12位）拼接在一起，几位最终的密钥：</p>
+<p>第一次：17FB6F0AA3BD</p>
+<p>第二次：1EFB6F0AA3BD</p>
+<p>第三次：7522B8C906D3</p>
+<p>第四次：7C24B5A7CB3F</p>
+<p>第五次：7D24B5A7CB3D</p>
+<p>第六次：7824B5A7CB3D</p>
+<p>即最后的 key 值为：17FB6F0AA3BD1EFB6F0AA3BD7522B8C906D37C24B5A7CB3F7D24B5A7CB3D7824B5A7CB3D</p>
+<p>最后，取消所有断点，在打印success代码后打断电，观察结果：</p>
+
+
+<p>即为答案。</p>
+<h2 id="反汇编："><a href="#反汇编：" class="headerlink" title="反汇编："></a>反汇编：</h2><p>用<code>ida.exe</code>进入该程序，快捷键F5，查看反汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">int __cdecl main_0(int argc, const char **argv, const char **envp)  </span><br><span class="line">&#123;  </span><br><span class="line"> _DWORD *v3; // esi  </span><br><span class="line"> __int64 v4; // rax  </span><br><span class="line"> unsigned int v5; // ebx  </span><br><span class="line"> unsigned int v6; // eax  </span><br><span class="line"> _DWORD *v7; // edx  </span><br><span class="line"> unsigned int v8; // edi  </span><br><span class="line"> int v9; // ecx  </span><br><span class="line"> _DWORD *v10; // eax  </span><br><span class="line"> _DWORD *v11; // eax  </span><br><span class="line"> _DWORD *v12; // eax  </span><br><span class="line"> _DWORD *v13; // eax  </span><br><span class="line"> _BYTE *v14; // edx  </span><br><span class="line"> char v16; // [esp-10h] [ebp-80h]  </span><br><span class="line"> char v17; // [esp-4h] [ebp-74h]  </span><br><span class="line"> char v18; // [esp+0h] [ebp-70h]  </span><br><span class="line"> unsigned int v19; // [esp+10h] [ebp-60h]  </span><br><span class="line"> int v20; // [esp+24h] [ebp-4Ch]  </span><br><span class="line"> int v21; // [esp+28h] [ebp-48h]  </span><br><span class="line"> int v22; // [esp+2Ch] [ebp-44h]  </span><br><span class="line"> int v23; // [esp+30h] [ebp-40h]  </span><br><span class="line"> void *Block; // [esp+34h] [ebp-3Ch] BYREF  </span><br><span class="line"> int v25; // [esp+38h] [ebp-38h]  </span><br><span class="line"> int v26; // [esp+3Ch] [ebp-34h]  </span><br><span class="line"> int Buffer[4]; // [esp+40h] [ebp-30h] BYREF  </span><br><span class="line"> char Arglist[16]; // [esp+50h] [ebp-20h] BYREF  </span><br><span class="line"> int v29; // [esp+6Ch] [ebp-4h]</span><br><span class="line"></span><br><span class="line"> sub_4010AA(&amp;Block);  </span><br><span class="line"> v29 = 0;  </span><br><span class="line"> sub_401177(&quot;input the student id: &quot;, v17);  </span><br><span class="line"> sub_401041(&quot;%13s&quot;, (char)Arglist);  </span><br><span class="line"> sub_401177(&quot;input the key: &quot;, v16);  </span><br><span class="line"> v3 = malloc(12 * ((v25 - (int)Block) &gt;&gt; 3) + 1);  </span><br><span class="line"> sub_401041(&quot;%s&quot;, (char)v3);  </span><br><span class="line"> if ( !(unsigned __int8)sub_4015BE(v3, 12 * ((v25 - (int)Block) &gt;&gt; 3)) )  </span><br><span class="line">   goto LABEL_14;  </span><br><span class="line"> v4 = sub_401325(Arglist);  </span><br><span class="line"> v5 = v4;  </span><br><span class="line"> v6 = HIDWORD(v4);  </span><br><span class="line"> v7 = Block;  </span><br><span class="line"> v8 = 0;  </span><br><span class="line"> v19 = v6;  </span><br><span class="line"> if ( (v25 - (int)Block) &gt;&gt; 3 )  </span><br><span class="line"> &#123;  </span><br><span class="line">   v23 = __PAIR64__(v6, v5) &gt;&gt; 31;  </span><br><span class="line">   v22 = __PAIR64__(v6, v5) &gt;&gt; 30;  </span><br><span class="line">   v21 = __PAIR64__(v6, v5) &gt;&gt; 29;  </span><br><span class="line">   v20 = __PAIR64__(v6, v5) &gt;&gt; 28;  </span><br><span class="line">   v9 = 2 * v5;  </span><br><span class="line">   while ( 1 )  </span><br><span class="line">   &#123;  </span><br><span class="line">     v7[2 * v8] ^= v5;  </span><br><span class="line">     v7[2 * v8 + 1] ^= v6;  </span><br><span class="line">     v10 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= v9;  </span><br><span class="line">     v10[2 * v8 + 1] ^= v23;  </span><br><span class="line">     v11 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 4 * v5;  </span><br><span class="line">     v11[2 * v8 + 1] ^= v22;  </span><br><span class="line">     v12 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 8 * v5;  </span><br><span class="line">     v12[2 * v8 + 1] ^= v21;  </span><br><span class="line">     v13 = Block;  </span><br><span class="line">     *((_DWORD *)Block + 2 * v8) ^= 16 * v5;  </span><br><span class="line">     v13[2 * v8 + 1] ^= v20;  </span><br><span class="line">     sub_4015EB((char *)Buffer, &quot;%012llX\n&quot;, *((_DWORD *)Block + 2 * v8));  </span><br><span class="line">     if ( Buffer[0] != *v3 || Buffer[1] != v3[1] || Buffer[2] != v3[2] )  </span><br><span class="line">       break;  </span><br><span class="line">     ++v8;  </span><br><span class="line">     v7 = Block;  </span><br><span class="line">     v3 += 3;  </span><br><span class="line">     v9 = 2 * v5;  </span><br><span class="line">     v6 = v19;  </span><br><span class="line">     if ( v8 &gt;= (v25 - (int)Block) &gt;&gt; 3 )  </span><br><span class="line">       goto LABEL_8;  </span><br><span class="line">   &#125;  </span><br><span class="line">LABEL_14:  </span><br><span class="line">   sub_401177(&quot;key error&quot;, v18);  </span><br><span class="line">   exit(0);  </span><br><span class="line"> &#125;  </span><br><span class="line">LABEL_8:  </span><br><span class="line"> sub_401177(&quot;success&quot;, v18);  </span><br><span class="line"> v14 = Block;  </span><br><span class="line"> if ( Block )  </span><br><span class="line"> &#123;  </span><br><span class="line">   if ( ((v26 - (_DWORD)Block) &amp; 0xFFFFFFF8) &gt;= 0x1000 )  </span><br><span class="line">   &#123;  </span><br><span class="line">     v14 = (_BYTE *)*((_DWORD *)Block - 1);  </span><br><span class="line">     if ( (unsigned int)((_BYTE *)Block - v14 - 4) &gt; 0x1F )  </span><br><span class="line">       invalid_parameter_noinfo_noreturn();  </span><br><span class="line">   &#125;  </span><br><span class="line">   sub_4010D7(v14);  </span><br><span class="line"> &#125;  </span><br><span class="line"> return 0;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/06/09/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/" data-id="cmmu7h3q40002a0cffiuefvbq" data-title="汇编期末报告" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-证据-浏览器取证" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/06/06/%E8%AF%81%E6%8D%AE-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%96%E8%AF%81/" class="article-date">
+  <time class="dt-published" datetime="2024-06-06T13:46:00.117Z" itemprop="datePublished">2024-06-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-    <a style="--stagger:2" href="2024/06/06/%E8%AF%81%E6%8D%AE-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%96%E8%AF%81/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          证据法学浏览器取证工具报告
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/06/06/%E8%AF%81%E6%8D%AE-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%96%E8%AF%81/">证据法学浏览器取证工具报告</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          6月 06
-          ·
-          9 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="浏览器取证工具开发报告"><a href="#浏览器取证工具开发报告" class="headerlink" title="浏览器取证工具开发报告"></a>浏览器取证工具开发报告</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本报告记录了基于 Python 的浏览器取证工具的过程，该工具用于从 Chrome 和 Firefox 浏览器中提取历史记录，并生成 PDF 格式的报告。主要包括环境设置、数据提取、数据分析及报告生成等关键步骤。利用此工具，我们可以有效地获取并分析浏览器的记录包含的信息，以便在取证分析中使用。</p>
+<h3 id="1-引言"><a href="#1-引言" class="headerlink" title="1. 引言"></a>1. 引言</h3><p>随着互联网的普及，浏览器成为了用户访问互联网的主要工具，同时也是记录用户上网行为的重要工具。在数字取证中，浏览器历史记录可以提供有价值的线索。本项目的目标是开发一个工具，从 Chrome 和 Firefox 中提取用户的浏览历史，并生成易于阅读的 PDF 报告。</p>
+<h3 id="2-环境设置"><a href="#2-环境设置" class="headerlink" title="2. 环境设置"></a>2. 环境设置</h3><h4 id="2-1-开发环境"><a href="#2-1-开发环境" class="headerlink" title="2.1 开发环境"></a>2.1 开发环境</h4><ul>
+<li><strong>操作系统</strong>: Windows 10</li>
+<li><strong>编程语言</strong>: Python 3.8+</li>
+<li><strong>依赖库</strong>:<ul>
+<li><code>sqlite3</code>: 用于访问 SQLite 数据库。</li>
+<li><code>reportlab</code>: 用于生成 PDF 报告。</li>
+<li><code>pandas</code>: 用于数据分析和处理。</li>
+<li><code>argparse</code>: 用于命令行参数解析。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-2-安装依赖"><a href="#2-2-安装依赖" class="headerlink" title="2.2 安装依赖"></a>2.2 安装依赖</h4><p>确保已安装所有必要的 Python 库。使用以下命令安装依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install reportlab pandas</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-使用方法及成果展示"><a href="#3-使用方法及成果展示" class="headerlink" title="3.使用方法及成果展示"></a>3.使用方法及成果展示</h3><h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><p>在不知道如何使用的情况下，可以在终端中键入</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python evi_hw1.py -h</span><br></pre></td></tr></table></figure>
+
+<p>来获取帮助，执行需要两个参数——浏览器信息及生成pdf文件名称，默认生成在当前路径文件夹下。</p>
+<h3 id="4-数据提取"><a href="#4-数据提取" class="headerlink" title="4. 数据提取"></a>4. 数据提取</h3><p>浏览器历史记录通常存储在 SQLite 数据库中。Chrome 和 Firefox 都使用这种格式存储历史记录。因此，我们可以使用 <code>sqlite3</code> 库来访问这些数据库。</p>
+<h4 id="4-1-关闭浏览器"><a href="#4-1-关闭浏览器" class="headerlink" title="4.1 关闭浏览器"></a>4.1 关闭浏览器</h4><p>为了避免文件锁定问题，我们需要在提取数据之前确保浏览器已关闭。使用 <code>subprocess</code> 模块关闭浏览器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">close_browser</span>(<span class="params">browser_name</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            result = subprocess.run([<span class="string">&#x27;tasklist&#x27;</span>], stdout=subprocess.PIPE, text=<span class="literal">True</span>)</span><br><span class="line">            <span class="keyword">if</span> browser_name <span class="keyword">in</span> result.stdout:</span><br><span class="line">                subprocess.run([<span class="string">&quot;taskkill&quot;</span>, <span class="string">&quot;/F&quot;</span>, <span class="string">&quot;/IM&quot;</span>, browser_name], check=<span class="literal">True</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;browser_name&#125;</span> 进程被关闭。&quot;</span>)</span><br><span class="line">                time.sleep(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;browser_name&#125;</span> 浏览器已全部关闭，程序将继续执行。&quot;</span>)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">except</span> subprocess.CalledProcessError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;关闭浏览器时发生错误: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-2-提取-Chrome-历史记录"><a href="#4-2-提取-Chrome-历史记录" class="headerlink" title="4.2 提取 Chrome 历史记录"></a>4.2 提取 Chrome 历史记录</h4><h5 id="Chrome-历史记录的存储"><a href="#Chrome-历史记录的存储" class="headerlink" title="Chrome 历史记录的存储"></a>Chrome 历史记录的存储</h5><p>Chrome 的浏览历史记录存储在一个名为 <code>History</code> 的 SQLite 数据库文件中，通常位于用户目录的 <code>AppData</code> 文件夹下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\&lt;username&gt;\AppData\Local\Google\Chrome\User Data\Default\History</span><br></pre></td></tr></table></figure>
+
+<h5 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h5><p>为了提取 Chrome 历史记录，我们需要首先关闭 Chrome 浏览器，因为它会锁定 <code>History</code> 文件，阻止其他程序访问。以下是主要步骤：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_chrome_history</span>():</span><br><span class="line">    close_browser(<span class="string">&#x27;chrome.exe&#x27;</span>)</span><br><span class="line">    time.sleep(<span class="number">2</span>)</span><br><span class="line">    history_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Local/Google/Chrome/User Data/Default/History&quot;</span></span><br><span class="line">    temp_history_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Local/Temp/History&quot;</span></span><br><span class="line">    shutil.copyfile(history_path, temp_history_path)</span><br><span class="line">    conn = sqlite3.connect(temp_history_path)</span><br><span class="line">    cursor = conn.cursor()</span><br><span class="line">    cursor.execute(<span class="string">&quot;SELECT url, title, visit_count, last_visit_time FROM urls&quot;</span>)</span><br><span class="line">    rows = cursor.fetchall()</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> [(row[<span class="number">0</span>], row[<span class="number">1</span>], row[<span class="number">2</span>], convert_chrome_time(row[<span class="number">3</span>])) <span class="keyword">for</span> row <span class="keyword">in</span> rows]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭浏览器</strong>: 调用 <code>close_browser(&#39;chrome.exe&#39;)</code> 关闭所有 Chrome 浏览器进程，避免文件被锁定。</li>
+<li><strong>等待</strong>: 使用 <code>time.sleep(2)</code> 确保进程完全关闭。</li>
+<li><strong>复制文件</strong>: 将 <code>History</code> 文件复制到临时目录，确保不影响原文件。</li>
+<li><strong>读取数据</strong>: 连接到临时文件的 SQLite 数据库，并执行查询以提取 URL、标题、访问次数和最后访问时间。</li>
+<li><strong>转换时间</strong>: 使用 <code>convert_chrome_time</code> 函数将 Chrome 的时间戳转换为标准日期时间格式。</li>
+</ul>
+<h4 id="4-3-提取-Firefox-历史记录"><a href="#4-3-提取-Firefox-历史记录" class="headerlink" title="4.3 提取 Firefox 历史记录"></a>4.3 提取 Firefox 历史记录</h4><h5 id="Firefox-历史记录的存储"><a href="#Firefox-历史记录的存储" class="headerlink" title="Firefox 历史记录的存储"></a>Firefox 历史记录的存储</h5><p>Firefox 的浏览历史记录存储在 <code>places.sqlite</code> 文件中，通常位于用户目录的 <code>AppData</code> 文件夹下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\&lt;username&gt;\AppData\Roaming\Mozilla\Firefox\Profiles\&lt;profile&gt;\places.sqlite</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>&lt;profile&gt;</code> 是用户的 Firefox 配置文件名，通常以 <code>.default-release</code> 或 <code>.default-release-1</code> 结尾。</p>
+<h5 id="代码解析-1"><a href="#代码解析-1" class="headerlink" title="代码解析"></a>代码解析</h5><p>为了提取 Firefox 历史记录，首先要确定当前用户的 Firefox 配置文件路径，并关闭 Firefox 浏览器。代码的主要步骤如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_firefox_history</span>():</span><br><span class="line">    close_browser(<span class="string">&#x27;firefox.exe&#x27;</span>)</span><br><span class="line">    time.sleep(<span class="number">2</span>)</span><br><span class="line">    profile_path = os.path.expanduser(<span class="string">&#x27;~&#x27;</span>) + <span class="string">&quot;/AppData/Roaming/Mozilla/Firefox/Profiles/&quot;</span></span><br><span class="line">    profile_folders = os.listdir(profile_path)</span><br><span class="line">    profile_folder = [f <span class="keyword">for</span> f <span class="keyword">in</span> profile_folders <span class="keyword">if</span> f.endswith(<span class="string">&#x27;.default-release&#x27;</span>) <span class="keyword">or</span> f.endswith(<span class="string">&#x27;.default-release-1&#x27;</span>)][<span class="number">0</span>]</span><br><span class="line">    history_path = <span class="string">f&quot;<span class="subst">&#123;profile_path&#125;</span><span class="subst">&#123;profile_folder&#125;</span>/places.sqlite&quot;</span></span><br><span class="line">    conn = sqlite3.connect(history_path)</span><br><span class="line">    cursor = conn.cursor()</span><br><span class="line">    cursor.execute(<span class="string">&quot;SELECT url, title, visit_count, last_visit_date FROM moz_places&quot;</span>)</span><br><span class="line">    rows = cursor.fetchall()</span><br><span class="line">    conn.close()</span><br><span class="line">    <span class="keyword">return</span> [(row[<span class="number">0</span>], row[<span class="number">1</span>], row[<span class="number">2</span>], convert_firefox_time(row[<span class="number">3</span>])) <span class="keyword">for</span> row <span class="keyword">in</span> rows]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>关闭浏览器</strong>: 调用 <code>close_browser(&#39;firefox.exe&#39;)</code> 关闭所有 Firefox 浏览器进程，避免文件被锁定。</li>
+<li><strong>选择配置文件夹</strong>: 从用户的 Firefox 配置文件目录中选择一个默认的配置文件夹，通常以 <code>.default-release</code> 结尾。</li>
+<li><strong>读取数据</strong>: 连接到 <code>places.sqlite</code> 文件的 SQLite 数据库，提取浏览记录数据。</li>
+<li><strong>转换时间</strong>: 使用 <code>convert_firefox_time</code> 函数将 Firefox 的时间戳转换为标准日期时间格式。</li>
+</ul>
+<h5 id="时间格式转换"><a href="#时间格式转换" class="headerlink" title="时间格式转换"></a>时间格式转换</h5><p>Chrome 和 Firefox 使用不同的时间戳格式。Chrome 的时间戳是自 1601 年以来的微秒数，Firefox 的时间戳是自 1970 年以来的微秒数。为了将这些时间戳转换为人类可读的日期，我们使用了以下函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">convert_chrome_time</span>(<span class="params">chrome_time</span>):</span><br><span class="line">    <span class="keyword">return</span> datetime.datetime(<span class="number">1601</span>, <span class="number">1</span>, <span class="number">1</span>) + datetime.timedelta(microseconds=chrome_time)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">convert_firefox_time</span>(<span class="params">firefox_time</span>):</span><br><span class="line">    <span class="keyword">return</span> datetime.datetime(<span class="number">1970</span>, <span class="number">1</span>, <span class="number">1</span>) + datetime.timedelta(microseconds=firefox_time)</span><br></pre></td></tr></table></figure>
+
+<p>这些函数将浏览器的时间戳转换为标准日期时间格式，便于后续的分析和报告生成。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def convert_chrome_time(chrome_time):</span><br><span class="line">    try</span><br><span class="line">        if chrome_time is None:</span><br><span class="line">    except OverflowError:</span><br><span class="line">        print(&quot;Invalid date value:&quot;, chrome_time)</span><br><span class="line">        return None</span><br><span class="line"></span><br><span class="line">def convert_firefox_time(firefox_time):</span><br><span class="line">    try:</span><br><span class="line">        if firefox_time is None:</span><br><span class="line">            return None</span><br><span class="line">        return datetime.datetime(1970, 1, 1) + datetime.timedelta(microseconds=firefox_time)</span><br><span class="line">    except OverflowError:</span><br><span class="line">        print(&quot;Invalid date value:&quot;, firefox_time)</span><br><span class="line">        return None</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-报告生成"><a href="#5-报告生成" class="headerlink" title="5. 报告生成"></a>5. 报告生成</h3><p>使用 <code>reportlab</code> 库生成 PDF 报告。报告中包括 URL、标题、访问次数和最后访问时间。</p>
+<h4 id="5-1-PDF-报告生成"><a href="#5-1-PDF-报告生成" class="headerlink" title="5.1 PDF 报告生成"></a>5.1 PDF 报告生成</h4><p>创建一个包含表格的 PDF 文件，以清晰地展示提取到的历史记录：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate_pdf_report</span>(<span class="params">data, filename</span>):</span><br><span class="line">    doc = SimpleDocTemplate(filename, pagesize=letter, rightMargin=<span class="number">30</span>, leftMargin=<span class="number">30</span>, topMargin=<span class="number">30</span>, bottomMargin=<span class="number">18</span>)</span><br><span class="line">    elements = []</span><br><span class="line">    </span><br><span class="line">    styles = getSampleStyleSheet()</span><br><span class="line">    table_style = TableStyle([</span><br><span class="line">        (<span class="string">&#x27;GRID&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">1</span>, colors.black),</span><br><span class="line">        (<span class="string">&#x27;FONTNAME&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;Helvetica&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;FONTSIZE&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">10</span>),</span><br><span class="line">        (<span class="string">&#x27;VALIGN&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;TOP&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;BACKGROUND&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, <span class="number">0</span>), colors.lightgrey),</span><br><span class="line">        (<span class="string">&#x27;TEXTCOLOR&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, <span class="number">0</span>), colors.whitesmoke),</span><br><span class="line">        (<span class="string">&#x27;ALIGN&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="string">&#x27;LEFT&#x27;</span>),</span><br><span class="line">        (<span class="string">&#x27;LEFTPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">6</span>),</span><br><span class="line">        (<span class="string">&#x27;RIGHTPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">6</span>),</span><br><span class="line">        (<span class="string">&#x27;TOPPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">3</span>),</span><br><span class="line">        (<span class="string">&#x27;BOTTOMPADDING&#x27;</span>, (<span class="number">0</span>, <span class="number">0</span>), (-<span class="number">1</span>, -<span class="number">1</span>), <span class="number">3</span>),</span><br><span class="line">    ])</span><br><span class="line">    </span><br><span class="line">    data_for_table = [[<span class="string">&#x27;URL&#x27;</span>, <span class="string">&#x27;Title&#x27;</span>, <span class="string">&#x27;Visits&#x27;</span>, <span class="string">&#x27;Last Visited&#x27;</span>]]</span><br><span class="line">    <span class="keyword">for</span> url, title, visits, last_visited <span class="keyword">in</span> data:</span><br><span class="line">        <span class="keyword">if</span> last_visited <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            last_visited = last_visited.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            last_visited = <span class="string">&#x27;Never&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> title <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            title = <span class="string">&quot;No title&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            title = Paragraph(title.encode(<span class="string">&#x27;latin1&#x27;</span>, <span class="string">&#x27;replace&#x27;</span>).decode(<span class="string">&#x27;latin1&#x27;</span>),styles[<span class="string">&#x27;Normal&#x27;</span>])  <span class="comment"># Handle encoding issues</span></span><br><span class="line">        shortened_url = shorten_url(url)</span><br><span class="line">        link = <span class="string">f&#x27;&lt;a href=&quot;<span class="subst">&#123;html.escape(url)&#125;</span>&quot;&gt;<span class="subst">&#123;html.escape(shortened_url)&#125;</span>&lt;/a&gt;&#x27;</span></span><br><span class="line">        data_for_table.append([Paragraph(link, styles[<span class="string">&#x27;Normal&#x27;</span>]), title, <span class="built_in">str</span>(visits), last_visited])</span><br><span class="line"></span><br><span class="line">    t = Table(data_for_table, colWidths=[<span class="number">2.7</span>*inch, <span class="number">1.8</span>*inch, <span class="number">0.7</span>*inch, <span class="number">1.8</span>*inch])</span><br><span class="line">    t.setStyle(table_style)</span><br><span class="line">    elements.append(t)</span><br><span class="line">    </span><br><span class="line">    doc.build(elements)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">shorten_url</span>(<span class="params">url, max_length=<span class="number">50</span></span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(url) &lt;= max_length:</span><br><span class="line">        <span class="keyword">return</span> url</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> url[:max_length-<span class="number">3</span>] + <span class="string">&quot;...&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>为方便观察，将生成的 pdf 报告以表格的方式呈现，但是由于网站可能过长，表格第一栏与第二栏有时便不可避免地会发生越格现象，我通过</p>
+<ol>
+<li>合理的栏长度分配；</li>
+<li>精简 url 长度使得多余部分以省略号显示（在保证url信息不丢失的基础上）；</li>
+<li>将 title 包裹在<code>Paragraph</code>中，使其能够自动换行。</li>
+</ol>
+<p>解决了上述问题。</p>
+<h3 id="5-结论"><a href="#5-结论" class="headerlink" title="5. 结论"></a>5. 结论</h3><p>通过本次项目开发，我们成功创建了一个能够提取 Chrome 和 Firefox 浏览器历史记录的取证工具。该工具能够有效地提取用户的浏览历史，并生成 PDF 报告，为后续的取证分析提供了便利。本项目展示了使用 Python 进行数据提取和报告生成的过程，同时也为未来进一步开发和优化取证工具提供了良好的基础。</p>
+<hr>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ul>
+<li>Python 官方文档 <a target="_blank" rel="noopener" href="https://docs.python.org/3/">https://docs.python.org/3/</a></li>
+<li><code>sqlite3</code> 模块文档 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/sqlite3.html">https://docs.python.org/3/library/sqlite3.html</a></li>
+<li><code>reportlab</code> 库文档 <a target="_blank" rel="noopener" href="https://www.reportlab.com/docs/reportlab-userguide.pdf">https://www.reportlab.com/docs/reportlab-userguide.pdf</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/06/06/%E8%AF%81%E6%8D%AE-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%96%E8%AF%81/" data-id="cmmu7h3q60007a0cf9nuv043e" data-title="证据法学浏览器取证工具报告" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-upload_file" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/05/21/upload_file/" class="article-date">
+  <time class="dt-published" datetime="2024-05-21T02:23:19.345Z" itemprop="datePublished">2024-05-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-    <a style="--stagger:3" href="2024/05/21/%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          应用密码学设计（照搬并分析设计√）AES对称加密算法
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/05/21/upload_file/">Upload &amp; Restore file to your blog.</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          5月 21
-          ·
-          30 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h1><p>总算部署到把静态本地 blog 部署到 github 网站上去了，过程有点繁琐到最后反复试错不知道怎么还是解决了，接下来看看怎么把这个最新的文件pull到我的 blog 上去吧</p>
+<p>首先尝试第一种方法，先把更新的 md 文件 pull 到我的仓库里面去···</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br></pre></td></tr></table></figure>
+
+<p>虽然上传成功，看看效果，果然不行，还是需要调用 hexo</p>
+<p>尝试 <code>hexo d</code> ，没有效果</p>
+<p>尝试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>部署成功，不过问题出在第一次上传只更新到了“虽然上传成功”这一行，探究原因</p>
+<h2 id="操作流程"><a href="#操作流程" class="headerlink" title="操作流程"></a>操作流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Some changes&quot;</span><br><span class="line"></span><br><span class="line">git pull origin master</span><br><span class="line"></span><br><span class="line">hexo clean &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>或 <code>git add . &amp;&amp; git commit -m &quot;Some updates&quot; &amp;&amp; git pull origin master &amp;&amp; hexo clean &amp;&amp; hexo deploy</code></p>
+<p>等待几分钟即可</p>
+<p>但是有时存在网络不稳定问题导致经常出错 :(  </p>
+<p>后续需要进一步解决</p>
+<h1 id="恢复文件"><a href="#恢复文件" class="headerlink" title="恢复文件"></a>恢复文件</h1><p>不知道哪位把整个文件夹（正常来说应该在根目录下的<code>blog</code>文件夹执行上述操作）执行了上述操作还寻思为什么会出问题，最后在查找解决方法 restore 的过程中中断 failed，导致整个本地个人博客消失，心慌之下终于在网上找到解决方案并折腾回来了上一版本的信息。</p>
+<ol>
+<li>查看提交的历史记录并找到对应的版本</li>
+</ol>
+<p>​	<code>git reflog --date=iso</code></p>
+<ol start="2">
+<li><p>使用<code>git show commitId</code>来确认恢复对象为这次的修改（commitId 为上述查询到的目标版本号）</p>
+</li>
+<li><p>使用git cherry-pick commitId 来重新把这次修改应用到该分支上</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git cherry-pick commitId</span><br><span class="line"></span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git cherry-pick --continue</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后执行<code>git push</code>恢复文件</p>
+</li>
+</ol>
+<p>真的很恐怖我的作业还在上面&#x2F;哭，还好解决了</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/05/21/upload_file/" data-id="cmmu7h3q50004a0cf3vgn94o5" data-title="Upload &amp; Restore file to your blog." class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-对称加密算法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/05/21/%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" class="article-date">
+  <time class="dt-published" datetime="2024-05-21T02:23:19.345Z" itemprop="datePublished">2024-05-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-    <a style="--stagger:4" href="2024/05/21/upload_file/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          Upload & Restore file to your blog.
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/05/21/%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">应用密码学设计（照搬并分析设计√）AES对称加密算法</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          5月 21
-          ·
-          1 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>通过逐步探索的认识完成一个自己设计的对称加密算法（逆向分析 :D</p>
+<hr>
+<h2 id="例子与分析"><a href="#例子与分析" class="headerlink" title="例子与分析"></a>例子与分析</h2><p>为了初步了解 python 下的加密方式，我们先以以下密码分组链接模式（CBC）与一重 AES 算法结合，分析以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">def encrypt(data, key):</span><br><span class="line">   iv = os.urandom(16)  # AES 块大小为128位, 即16字节</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   encryptor = cipher.encryptor()</span><br><span class="line">   padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">   padded_data = padder.update(data) + padder.finalize()</span><br><span class="line">   encrypted = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line">   return iv + encrypted</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, key):</span><br><span class="line">   iv = encrypted[:16]</span><br><span class="line">   encrypted_data = encrypted[16:]</span><br><span class="line">   cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">   decryptor = cipher.decryptor()</span><br><span class="line">   decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">   unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">   decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line">   return decrypted</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">   key = os.urandom(32)  # AES-256要求密钥长度为32字节</span><br><span class="line"></span><br><span class="line">   # 获取用户输入</span><br><span class="line">   user_input = input(&quot;请输入您想要加密的内容：&quot;)</span><br><span class="line">   data = user_input.encode(&#x27;utf-8&#x27;)  # 将输入的字符串转换为字节</span><br><span class="line"></span><br><span class="line">   # 加密</span><br><span class="line">   encrypted_data = encrypt(data, key)</span><br><span class="line">   print(&quot;Encrypted:&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">   # 询问用户是否要解密</span><br><span class="line">   if input(&quot;是否要解密加密后的数据？(y/n): &quot;).lower() == &#x27;y&#x27;:</span><br><span class="line">       # 解密</span><br><span class="line">       decrypted_data = decrypt(encrypted_data, key)</span><br><span class="line">       print(&quot;Decrypted:&quot;, decrypted_data.decode(&#x27;utf-8&#x27;))  # 解码字节回字符串</span><br><span class="line">   else:</span><br><span class="line">       print(&quot;已选择不进行解密操作。&quot;)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:` </span><br><span class="line">   main()</span><br></pre></td></tr></table></figure>
+
+<h3 id="关键部分代码分析"><a href="#关键部分代码分析" class="headerlink" title="关键部分代码分析"></a>关键部分代码分析</h3><p>我们截取一个关键部分代码来进行理解（加密部分代码</p>
+<ol>
+<li><p>生成随机的初始向量 IV  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iv = os.urandom(16)  # AES块大小为128位, 即16字节  </span><br></pre></td></tr></table></figure>
+
+<p>- 作用: 初始向量（IV）用于AES的CBC模式，可以为相同的明文生成不同的密文。<br>- <code>os.urandom(16)</code>: 这个函数生成一个16字节的随机数，用作IV。AES的块大小是128位，即16字节。</p>
+</li>
+<li><p>创建加密对象  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())  </span><br><span class="line">encryptor = cipher.encryptor()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code> Cipher</code>: 创建一个Cipher对象，这个对象参数包括加密算法、模式和后端。<br>- <code>algorithms.AES(key)</code>: 此处指明使用AES算法，并传入密钥<code>key</code>，其中<code>key</code>为按照 AES-256 要求随机生成的32位随机数。<br>- <code>modes.CBC(iv)</code>: 指定加密模式为CBC（Cipher Block Chaining），并传入向量IV。<br>- <code>backend=default_backend()</code>: 指定使用默认的加密后端。<br>- <code>cipher.encryptor()</code>: 从Cipher对象中创建一个加密器对象（我将它理解成一个承载 cipher 的对象，因为后续的加密都要基于这个对象格式），用于后续的数据加密。</p>
+</li>
+<li><p>填充数据以符合块大小要求  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">padder = padding.PKCS7(algorithms.AES.block_size).padder()  </span><br><span class="line">padded_data = padder.update(data) + padder.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- PKCS7填充: AES算法要求数据长度必须是块大小的整数倍。PKCS7是一种填充标准，用于在数据的末尾添加足够的填充字节。<br>- <code>padding.PKCS7(algorithms.AES.block_size)</code>: 创建一个PKCS7填充器，设置块大小为AES的块大小（128位）。<br>- 填充过程: <code>padder.update(data)</code>处理原始数据，添加部分填充；<code>padder.finalize()</code>完成填充过程，确保所有数据被正确填充。</p>
+</li>
+<li><p>加密数据  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">encrypted = encryptor.update(padded_data) + encryptor.finalize()  </span><br></pre></td></tr></table></figure>
+
+<p>- <code>encryptor.update(padded_data)</code>: 加密填充后的数据，包含以下流程：</p>
+<ol>
+<li><p>输入数据<br> update方法接受一部分（或全部）待加密的数据。在使用像CBC这样的块加密模式时，输入数据通常需要先进行填充，因为块加密算法要求输入数据的长度必须是块大小的整数倍（AES的块大小为128位或16字节）。</p>
+</li>
+<li><p>数据分块<br> 加密器在内部将输入的padded_data分成若干个块，每个块的大小等于加密算法的块大小。对于AES来说，即是每16字节划分为一个块。</p>
+</li>
+<li><p>加密每个块<br> 对于每一个数据块，加密器会按照指定的加密算法和模式进行处理。以上面的AES和CBC模式为例：</p>
+</li>
+</ol>
+<p>第一个数据块：使用初始向量（IV）与第一个数据块进行异或（XOR）操作，然后使用AES算法对结果进行加密。<br>后续数据块：每个后续的数据块都会与前一个加密后的块进行XOR操作，然后再进行AES加密。</p>
+<p>​	     即是说 python 将加密算法已经进行了封装，我们后续需要再行将此函数落实为代码执行。</p>
+<ol start="4">
+<li><p>生成密文<br>加密后的每个块会立即生成相应的密文块。encryptor.update(padded_data)方法将这些密文块<strong>合并</strong>，形成一个连续的密文数据流。</p>
+</li>
+<li><p>返回密文<br>方法最终返回的是处理过的流密文。</p>
+</li>
+</ol>
+<p>- <code>encryptor.finalize()</code>: 完成加密过程，确保所有数据块都被加密。</p>
+</li>
+<li><p>返回IV和加密的数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return iv + encrypted  </span><br></pre></td></tr></table></figure>
+
+<p> - 最后，函数返回的是IV和加密后的数据的组合。在解密时，需要使用相同的IV和密钥才能正确解密数据。通过<strong>将IV附加到加密数据的前面</strong>，可以方便地在解密时提取和使用。</p>
+</li>
+</ol>
+<h3 id="详细函数解析"><a href="#详细函数解析" class="headerlink" title="详细函数解析"></a>详细函数解析</h3><h4 id="密码分组链接模式"><a href="#密码分组链接模式" class="headerlink" title="密码分组链接模式"></a>密码分组链接模式</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class CBC(ModeWithInitializationVector):</span><br><span class="line">  name = &quot;CBC&quot;</span><br><span class="line">  def __init__(self, initialization_vector: bytes):</span><br><span class="line">     utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">     self._initialization_vector = initialization_vector</span><br><span class="line">  @property</span><br><span class="line">  def initialization_vector(self) -&gt; bytes:</span><br><span class="line">     return self._initialization_vector</span><br><span class="line">  validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class CBC(ModeWithInitializationVector):</span><br></pre></td></tr></table></figure>
+
+<p>这行代码定义了一个名为CBC的类，它继承自<code>ModeWithInitializationVector</code>，CBC类是一个加密模式，它需要一个初始化向量（IV）。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;CBC&quot;</span><br></pre></td></tr></table></figure>
+
+<p>一个类级别的属性，用于标识该加密模式的名称为”CBC”。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, initialization_vector: bytes):</span><br><span class="line">    utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</span><br><span class="line">    self._initialization_vector = initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数initialization_vector，用作CBC模式的初始向量。</p>
+<p><code>utils._check_byteslike(&quot;initialization_vector&quot;, initialization_vector)</code>：这行代码调用一个工具函数<code>check_byteslike</code>，检查<code>initialization_vector</code>是否是字节类型。这是为了确保类型安全，防止因类型错误而引发运行时错误。<br><code>self._initialization_vector = initialization_vector</code>：这行代码将传入的初始化向量保存在实例变量<code>_initialization_vector</code>中，以便于后续使用。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def initialization_vector(self) -&gt; bytes:</span><br><span class="line">    return self._initialization_vector</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。此处定义的属性为initialization_vector，用于获取实例的私有变量<code>_initialization_vector</code>的值。这提供了一个安全的访问方式，外部代码可以通过属性访问IV值，而无法直接修改它，保持了数据的封装和安全性。</p>
+<p><strong>方法</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">validate_for_algorithm = _check_iv_and_key_length</span><br></pre></td></tr></table></figure>
+
+<p>将一个名为<code>_check_iv_and_key_length</code>的函数或方法赋值给类的<code>validate_for_algorithm</code>属性。<code>validate_for_algorithm</code>用于在某些操作前验证初始化向量和密钥长度的正确性。确保在加密操作开始前，初始化向量和密钥符合特定算法的要求。</p>
+<h4 id="AES-类"><a href="#AES-类" class="headerlink" title="AES 类"></a>AES 类</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">class AES(BlockCipherAlgorithm):</span><br><span class="line">  name = &quot;AES&quot;</span><br><span class="line">  block_size = 128</span><br><span class="line">  \# 512 added to support AES-256-XTS, which uses 512-bit keys</span><br><span class="line">  key_sizes = frozenset([128, 192, 256, 512])</span><br><span class="line">  def __init__(self, key: bytes):</span><br><span class="line">     self.key = _verify_key_size(self, key)</span><br><span class="line">  @property</span><br><span class="line">  def key_size(self) -&gt; int:</span><br><span class="line">     return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p><strong>类定义和继承</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class AES(BlockCipherAlgorithm):</span><br></pre></td></tr></table></figure>
+
+<p>定义了一个名为<code>AES</code>的类，它继承自<code>BlockCipherAlgorithm</code>。<code>BlockCipherAlgorithm</code>为块密码算法（如AES）提供一些基本功能或规范。</p>
+<p><strong>类属性</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name = &quot;AES&quot;</span><br><span class="line">block_size = 128</span><br><span class="line">key_sizes = frozenset([128, 192, 256, 512])</span><br></pre></td></tr></table></figure>
+
+<p><code>name = &quot;AES&quot;</code>：一个类级别的属性，用于表明该类实现的是AES算法。<br><code>block_size = 128</code>：表示AES算法使用的块大小是128位，是AES算法的标准块大小。<br><code>key_sizes = frozenset([128, 192, 256, 512])</code>：定义了有效的密钥大小（以位为单位）。AES标准支持128位、192位和256位密钥。额外的512位密钥大小说明可能是为了支持特定的AES变体或模式，如AES-256-XTS。</p>
+<p><strong>构造器（init 方法）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, key: bytes):</span><br><span class="line">    self.key = _verify_key_size(self, key)</span><br></pre></td></tr></table></figure>
+
+<p>这个方法是类的构造器，它接受一个参数key，这个参数是一个字节序列，用作AES算法的密钥。</p>
+<p><code>_verify_key_size(self, key)</code>：这行代码调用了一个函数_verify_key_size，传入当前实例和密钥。用于验证密钥的大小是否符合在<code>key_sizes</code>属性中定义的有效大小。</p>
+<p><strong>属性装饰器（@property）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property</span><br><span class="line">def key_size(self) -&gt; int:</span><br><span class="line">    return len(self.key) * 8</span><br></pre></td></tr></table></figure>
+
+<p>装饰器@property将方法变成一个可读属性。定义的属性为<code>key_size</code>，用于获取实例的密钥的大小（以位为单位）。<code>len(self.key)</code> 返回密钥的字节长度，乘以8转换为位长度。这提供了一个方便的方式来查询使用中的密钥大小。</p>
+<p>发现通过对<code>python</code>对于 AES 算法的实现进行解析较为困难，故直接调用，希望自己探究并在一定程度上实现 AES 的刘彻个。</p>
+<blockquote>
+<p>详细 AES 执行流程参考 <a target="_blank" rel="noopener" href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">官网 AES 报告</a></p>
+</blockquote>
+<h2 id="完成与实现（-WAV-PNG-MP4"><a href="#完成与实现（-WAV-PNG-MP4" class="headerlink" title="完成与实现（.WAV .PNG .MP4)"></a>完成与实现（.WAV .PNG .MP4)</h2><p>现在采用 CBC + 多重（用户决定） AES 算法 来模拟标准的正常流程的函数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br><span class="line">469</span><br><span class="line">470</span><br><span class="line">471</span><br><span class="line">472</span><br><span class="line">473</span><br><span class="line">474</span><br><span class="line">475</span><br><span class="line">476</span><br><span class="line">477</span><br><span class="line">478</span><br><span class="line">479</span><br><span class="line">480</span><br><span class="line">481</span><br><span class="line">482</span><br><span class="line">483</span><br><span class="line">484</span><br><span class="line">485</span><br><span class="line">486</span><br><span class="line">487</span><br><span class="line">488</span><br><span class="line">489</span><br><span class="line">490</span><br><span class="line">491</span><br><span class="line">492</span><br><span class="line">493</span><br><span class="line">494</span><br><span class="line">495</span><br><span class="line">496</span><br><span class="line">497</span><br><span class="line">498</span><br><span class="line">499</span><br><span class="line">500</span><br><span class="line">501</span><br><span class="line">502</span><br><span class="line">503</span><br><span class="line">504</span><br><span class="line">505</span><br><span class="line">506</span><br><span class="line">507</span><br><span class="line">508</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">import wave</span><br><span class="line">from PIL import Image</span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line">import ffmpeg</span><br><span class="line"># import tkinter as tk</span><br><span class="line"># from tkinter import filedialog, messagebox, scrolledtext</span><br><span class="line"></span><br><span class="line"># # -----------------------------------前置过程-----------------------------------------</span><br><span class="line"># def preEncrypt():</span><br><span class="line">#     buff = int(buff_entry.get())</span><br><span class="line">#     file_type = file_type_var.get()</span><br><span class="line">#     input_path = input_entry.get()</span><br><span class="line">#     output_encrypted_path = output_encrypted_entry.get()</span><br><span class="line">#     output_decrypted_path = output_decrypted_entry.get()</span><br><span class="line"></span><br><span class="line">#     if file_type == &#x27;WAV&#x27;:</span><br><span class="line">#         keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line">#         original_data = read_wav_file(input_path)</span><br><span class="line">#         wav_params = wave.open(input_path).getparams()</span><br><span class="line">#         encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">#         write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line">#         decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">#         write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line">#     elif file_type == &#x27;PNG&#x27;:</span><br><span class="line">#         keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line">#         original_data = read_png_file(input_path)</span><br><span class="line">#         img = Image.open(input_path)</span><br><span class="line">#         mode, size = img.mode, img.size</span><br><span class="line">#         encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">#         write_png_file(output_encrypted_path, encrypted_data, mode, size)</span><br><span class="line">#         decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">#         write_png_file(output_decrypted_path, decrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">#     # 更新文本框内容</span><br><span class="line">#     results_text.config(state=tk.NORMAL)  # 允许编辑文本框</span><br><span class="line">#     results_text.delete(&#x27;1.0&#x27;, tk.END)  # 清除现有内容</span><br><span class="line">#     results_text.insert(tk.END, f&quot;Encrypted Data (Partial/Hex):\n&#123;encrypted_data[:64].hex()&#125;\n\n&quot;)</span><br><span class="line">#     results_text.insert(tk.END, f&quot;Decrypted Data (Partial/Text):\n&#123;decrypted_data[:64]&#125;\n&quot;)</span><br><span class="line">#     results_text.config(state=tk.DISABLED)  # 禁止编辑文本框</span><br><span class="line">#     messagebox.showinfo(&quot;完成&quot;, &quot;加密和解密已完成&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># -----------------------------------加解密-------------------------------------------</span><br><span class="line">def encrypt(data, keys, buff):</span><br><span class="line">    # 为每层加密生成一个随机IV</span><br><span class="line">    ivs = [os.urandom(16) for _ in range(buff)]</span><br><span class="line">    encrypted_data = data</span><br><span class="line"></span><br><span class="line">    # 逐层加密数据</span><br><span class="line">    for i in range(buff):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        encryptor = cipher.encryptor()</span><br><span class="line">        padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">        padded_data = padder.update(encrypted_data) + padder.finalize()</span><br><span class="line">        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line"></span><br><span class="line">    # 将所有IV和加密的数据结合，所有IV对于解密是必需的</span><br><span class="line">    ivs_bytes = b&#x27;&#x27;.join(ivs)</span><br><span class="line">    return ivs_bytes + encrypted_data</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, keys, buff):</span><br><span class="line">    # 根据 buff 的值计算 IV 部分的字节长度</span><br><span class="line">    iv_length = 16 * buff</span><br><span class="line">    # 提取 IVs</span><br><span class="line">    ivs = [encrypted[i * 16:(i + 1) * 16] for i in range(buff)]</span><br><span class="line">    # 提取加密后的数据，跳过 IV 部分</span><br><span class="line">    encrypted_data = encrypted[iv_length:]</span><br><span class="line"></span><br><span class="line">    # 从最后一层开始逐层解密</span><br><span class="line">    for i in reversed(range(buff)):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        decryptor = cipher.decryptor()</span><br><span class="line">        decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">        # 解除填充</span><br><span class="line">        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">        encrypted_data = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line"></span><br><span class="line">    # 返回最终解密后的数据</span><br><span class="line">    return encrypted_data</span><br><span class="line"># -----------------------------------WAV----------------------------------------</span><br><span class="line">def read_wav_file(filename):</span><br><span class="line">    with wave.open(filename, &#x27;rb&#x27;) as wav_file:</span><br><span class="line">        data = wav_file.readframes(wav_file.getnframes())</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_wav_file(filename, data, params):</span><br><span class="line">    with wave.open(filename, &#x27;wb&#x27;) as wav_file:</span><br><span class="line">        wav_file.setparams(params)</span><br><span class="line">        wav_file.writeframes(data)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_wav(buff):</span><br><span class="line">    print(&quot;加/解密 WAV 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 WAV 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    keys = [os.urandom(32) for _r in range(buff)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # 读取原始WAV文件</span><br><span class="line">    original_data = read_wav_file(input_path)</span><br><span class="line">    wav_params = wave.open(input_path).getparams()</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># -----------------------------PNG---------------------------------------</span><br><span class="line">def read_png_file(filename):</span><br><span class="line">    &quot;&quot;&quot;读取PNG文件并返回数据.&quot;&quot;&quot;</span><br><span class="line">    with Image.open(filename) as img:</span><br><span class="line">        data = img.tobytes()</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_png_file(filename, data, mode, size):</span><br><span class="line">    &quot;&quot;&quot;使用给定数据创建一个新的PNG文件.&quot;&quot;&quot;</span><br><span class="line">    img = Image.frombytes(mode, size, data)</span><br><span class="line">    img.save(filename)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_png(buff):</span><br><span class="line">    print(&quot;加/解密 PNG 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 PNG 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 PNG 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 PNG 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # 生成密钥</span><br><span class="line">    keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line"></span><br><span class="line">    # 读取原始PNG文件</span><br><span class="line">    original_data = read_png_file(input_path)</span><br><span class="line">    img = Image.open(input_path)</span><br><span class="line">    mode, size = img.mode, img.size</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_encrypted_path, encrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_decrypted_path, decrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line"># ----------------------------MP3------------------------------------</span><br><span class="line"># def convert_mp3_to_wav(source_file, target_file):</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     使用ffmpeg将MP3文件转换为WAV格式。</span><br><span class="line">    </span><br><span class="line">#     :param source_file: MP3文件的路径</span><br><span class="line">#     :param target_file: 生成的WAV文件的路径</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     # 调用ffmpeg进行转换</span><br><span class="line">#         # 创建ffmpeg输入流</span><br><span class="line">#     audio_input = ffmpeg.input(source_file)</span><br><span class="line">#     # 创建ffmpeg输出流，指定输出格式为wav</span><br><span class="line">#     audio_output = ffmpeg.output(audio_input, target_file, format=&#x27;wav&#x27;)</span><br><span class="line">#     # 执行ffmpeg命令</span><br><span class="line">#     ffmpeg.run(audio_output)</span><br><span class="line"># # def read_mp3_file(file_path):</span><br><span class="line"># #     # 使用pydub读取MP3文件</span><br><span class="line"># #     audio = AudioSegment.from_mp3(file_path)</span><br><span class="line"># #     return audio</span><br><span class="line"></span><br><span class="line"># # def write_mp3_file(file_path, audio_data):</span><br><span class="line"># #     # 导出音频数据到MP3</span><br><span class="line"># #     audio_data.export(file_path, format=&quot;mp3&quot;)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_mp3(buff):</span><br><span class="line">    print(&quot;加/解密 MP3 文件\n: 功能暂未开发&quot;)</span><br><span class="line">    # input_path = input(&quot;请输入原始 MP3 文件路径：&quot;)</span><br><span class="line">    # output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    # output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # keys = [os.urandom(32) for _r in range(3)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # # 读取原始MP3文件</span><br><span class="line">    # path_without_extension, _ = os.path.splitext(input_path)</span><br><span class="line">    # path_with_extension = path_without_extension + &#x27;.wav&#x27;</span><br><span class="line">    # original_data = convert_mp3_to_wav(input_path, path_with_extension)</span><br><span class="line"></span><br><span class="line">    # wav_params = wave.open(path_with_extension).getparams()</span><br><span class="line"></span><br><span class="line">    # # 加密</span><br><span class="line">    # encrypted_data = encrypt(original_data, keys)</span><br><span class="line">    # print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    # write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # # 解密</span><br><span class="line">    # decrypted_data = decrypt(encrypted_data, keys)</span><br><span class="line">    # print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    # write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"># ----------------------------------------------------------------------------</span><br><span class="line">    </span><br><span class="line"># ----------------------------MP4------------------------------------</span><br><span class="line">def read_video(video_path):</span><br><span class="line">    probe = ffmpeg.probe(video_path)</span><br><span class="line">    video_info = next(stream for stream in probe[&#x27;streams&#x27;] if stream[&#x27;codec_type&#x27;] == &#x27;video&#x27;)</span><br><span class="line">    width = int(video_info[&#x27;width&#x27;])</span><br><span class="line">    height = int(video_info[&#x27;height&#x27;])</span><br><span class="line">    out, _ = ffmpeg.input(video_path).output(&#x27;pipe:&#x27;, format=&#x27;rawvideo&#x27;, pix_fmt=&#x27;rgb24&#x27;).run(capture_stdout=True)</span><br><span class="line">    return out, (width, height)</span><br><span class="line"></span><br><span class="line">def write_video(video_data, output_path, size):</span><br><span class="line">    ffmpeg.input(&#x27;pipe:&#x27;, format=&#x27;rawvideo&#x27;, pix_fmt=&#x27;rgb24&#x27;, s=f&#x27;&#123;size[0]&#125;x&#123;size[1]&#125;&#x27;).output(output_path, pix_fmt=&#x27;yuv420p&#x27;).run(input=video_data)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_mp4(buff):</span><br><span class="line">    input_path = input(&quot;请输入原始视频文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的视频文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的视频文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line"></span><br><span class="line">    original_data, size = read_video(input_path)</span><br><span class="line"></span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;Video data encrypted.&quot;)</span><br><span class="line"></span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;Video data decrypted.&quot;)</span><br><span class="line"></span><br><span class="line">    write_video(encrypted_data, output_encrypted_path, size)</span><br><span class="line">    write_video(decrypted_data, output_decrypted_path, size)</span><br><span class="line"># ----------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    print(&quot;这是一个 AES 多重加密算法，目前支持加密 WAV, PNG 格式的文件：&quot;)</span><br><span class="line">    while True:</span><br><span class="line">        # 请求用户输入</span><br><span class="line">        input_string = input(&quot;请输入您需要的AES加密层数（20以下的正整数）：&quot;)</span><br><span class="line">        </span><br><span class="line">        try:</span><br><span class="line">            # 尝试将输入转换为整数</span><br><span class="line">            buff = int(input_string)</span><br><span class="line">            </span><br><span class="line">            # 检查是否是20以下的正整数</span><br><span class="line">            if 1 &lt;= buff &lt;= 20:</span><br><span class="line">                break</span><br><span class="line">            else:</span><br><span class="line">                print(&quot;输入错误：请输入一个20以下的正整数。&quot;)</span><br><span class="line">        </span><br><span class="line">        except ValueError:</span><br><span class="line">            # 处理无法转换为整数的情况</span><br><span class="line">            print(&quot;输入错误：请输入一个有效的整数。&quot;)</span><br><span class="line">        </span><br><span class="line">    print(&quot;你可以有三种选择：&quot;)</span><br><span class="line">    print(&quot;1. 加/解密 .wav 文件；&quot;)</span><br><span class="line">    print(&quot;2. 加/解密 .mp3 文件；功能还待完善，敬请期待！&quot;)</span><br><span class="line">    print(&quot;3. 加/解密 .png 文件。&quot;)</span><br><span class="line">    print(&quot;4. 加/解密 .mp4 文件。&quot;)</span><br><span class="line">    choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    while ((choice != &#x27;1&#x27;) &amp; (choice != &#x27;2&#x27;) &amp; (choice != &#x27;3&#x27;) &amp; (choice != &#x27;4&#x27;)):</span><br><span class="line">        print(&quot;无效的输入，请按要求输入!&quot;)</span><br><span class="line">        choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    if choice == &#x27;1&#x27;:</span><br><span class="line">        encrypt_decrypt_wav(buff)</span><br><span class="line">    elif choice == &#x27;2&#x27;:</span><br><span class="line">        encrypt_decrypt_mp3(buff)</span><br><span class="line">    elif choice == &#x27;3&#x27;:</span><br><span class="line">        encrypt_decrypt_png(buff)</span><br><span class="line">    elif choice == &#x27;4&#x27;:</span><br><span class="line">        encrypt_decrypt_mp4(buff)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()# python</span><br><span class="line"></span><br><span class="line">import wave</span><br><span class="line">from PIL import Image</span><br><span class="line"># import ffmpeg</span><br><span class="line">from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes</span><br><span class="line">from cryptography.hazmat.primitives import padding</span><br><span class="line">from cryptography.hazmat.backends import default_backend</span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line"># -----------------------------------加解密-------------------------------------------</span><br><span class="line">def encrypt(data, keys, buff):</span><br><span class="line">    # 为每层加密生成一个随机IV</span><br><span class="line">    ivs = [os.urandom(16) for _ in range(buff)]</span><br><span class="line">    encrypted_data = data</span><br><span class="line"></span><br><span class="line">    # 逐层加密数据</span><br><span class="line">    for i in range(buff):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        encryptor = cipher.encryptor()</span><br><span class="line">        padder = padding.PKCS7(algorithms.AES.block_size).padder()</span><br><span class="line">        padded_data = padder.update(encrypted_data) + padder.finalize()</span><br><span class="line">        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()</span><br><span class="line"></span><br><span class="line">    # 将所有IV和加密的数据结合，所有IV对于解密是必需的</span><br><span class="line">    ivs_bytes = b&#x27;&#x27;.join(ivs)</span><br><span class="line">    return ivs_bytes + encrypted_data</span><br><span class="line"></span><br><span class="line">def decrypt(encrypted, keys, buff):</span><br><span class="line">    # 根据 buff 的值计算 IV 部分的字节长度</span><br><span class="line">    iv_length = 16 * buff</span><br><span class="line">    # 提取 IVs</span><br><span class="line">    ivs = [encrypted[i * 16:(i + 1) * 16] for i in range(buff)]</span><br><span class="line">    # 提取加密后的数据，跳过 IV 部分</span><br><span class="line">    encrypted_data = encrypted[iv_length:]</span><br><span class="line"></span><br><span class="line">    # 从最后一层开始逐层解密</span><br><span class="line">    for i in reversed(range(buff)):</span><br><span class="line">        key = keys[i]</span><br><span class="line">        iv = ivs[i]</span><br><span class="line">        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())</span><br><span class="line">        decryptor = cipher.decryptor()</span><br><span class="line">        decrypted_padded = decryptor.update(encrypted_data) + decryptor.finalize()</span><br><span class="line">        # 解除填充</span><br><span class="line">        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()</span><br><span class="line">        encrypted_data = unpadder.update(decrypted_padded) + unpadder.finalize()</span><br><span class="line"></span><br><span class="line">    # 返回最终解密后的数据</span><br><span class="line">    return encrypted_data</span><br><span class="line"># -----------------------------------WAV----------------------------------------</span><br><span class="line">def read_wav_file(filename):</span><br><span class="line">    with wave.open(filename, &#x27;rb&#x27;) as wav_file:</span><br><span class="line">        data = wav_file.readframes(wav_file.getnframes())</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_wav_file(filename, data, params):</span><br><span class="line">    with wave.open(filename, &#x27;wb&#x27;) as wav_file:</span><br><span class="line">        wav_file.setparams(params)</span><br><span class="line">        wav_file.writeframes(data)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_wav(buff):</span><br><span class="line">    print(&quot;加/解密 WAV 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 WAV 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    keys = [os.urandom(32) for _r in range(buff)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # 读取原始WAV文件</span><br><span class="line">    original_data = read_wav_file(input_path)</span><br><span class="line">    wav_params = wave.open(input_path).getparams()</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line"># ----------------------------MP3------------------------------------</span><br><span class="line"># def convert_mp3_to_wav(source_file, target_file):</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     使用ffmpeg将MP3文件转换为WAV格式。</span><br><span class="line">    </span><br><span class="line">#     :param source_file: MP3文件的路径</span><br><span class="line">#     :param target_file: 生成的WAV文件的路径</span><br><span class="line">#     &quot;&quot;&quot;</span><br><span class="line">#     # 调用ffmpeg进行转换</span><br><span class="line">#         # 创建ffmpeg输入流</span><br><span class="line">#     audio_input = ffmpeg.input(source_file)</span><br><span class="line">#     # 创建ffmpeg输出流，指定输出格式为wav</span><br><span class="line">#     audio_output = ffmpeg.output(audio_input, target_file, format=&#x27;wav&#x27;)</span><br><span class="line">#     # 执行ffmpeg命令</span><br><span class="line">#     ffmpeg.run(audio_output)</span><br><span class="line"># # def read_mp3_file(file_path):</span><br><span class="line"># #     # 使用pydub读取MP3文件</span><br><span class="line"># #     audio = AudioSegment.from_mp3(file_path)</span><br><span class="line"># #     return audio</span><br><span class="line"></span><br><span class="line"># # def write_mp3_file(file_path, audio_data):</span><br><span class="line"># #     # 导出音频数据到MP3</span><br><span class="line"># #     audio_data.export(file_path, format=&quot;mp3&quot;)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_mp3(buff):</span><br><span class="line">    print(&quot;加/解密 MP3 文件\n: 功能暂未开发&quot;)</span><br><span class="line">    # input_path = input(&quot;请输入原始 MP3 文件路径：&quot;)</span><br><span class="line">    # output_encrypted_path = input(&quot;请输入加密后保存的 WAV 文件路径：&quot;)</span><br><span class="line">    # output_decrypted_path = input(&quot;请输入解密后保存的 WAV 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # keys = [os.urandom(32) for _r in range(3)]  # 生成三个密钥</span><br><span class="line"></span><br><span class="line">    # # 读取原始MP3文件</span><br><span class="line">    # path_without_extension, _ = os.path.splitext(input_path)</span><br><span class="line">    # path_with_extension = path_without_extension + &#x27;.wav&#x27;</span><br><span class="line">    # original_data = convert_mp3_to_wav(input_path, path_with_extension)</span><br><span class="line"></span><br><span class="line">    # wav_params = wave.open(path_with_extension).getparams()</span><br><span class="line"></span><br><span class="line">    # # 加密</span><br><span class="line">    # encrypted_data = encrypt(original_data, keys)</span><br><span class="line">    # print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入加密后的数据到一个新的WAV文件（可选）</span><br><span class="line">    # write_wav_file(output_encrypted_path, encrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line">    # # 解密</span><br><span class="line">    # decrypted_data = decrypt(encrypted_data, keys)</span><br><span class="line">    # print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # # 写入解密后的数据到一个新的WAV文件</span><br><span class="line">    # write_wav_file(output_decrypted_path, decrypted_data, wav_params)</span><br><span class="line"></span><br><span class="line"># -----------------------------PNG---------------------------------------</span><br><span class="line">def read_png_file(filename):</span><br><span class="line">    &quot;&quot;&quot;读取PNG文件并返回数据.&quot;&quot;&quot;</span><br><span class="line">    with Image.open(filename) as img:</span><br><span class="line">        data = img.tobytes()</span><br><span class="line">    return data</span><br><span class="line"></span><br><span class="line">def write_png_file(filename, data, mode, size):</span><br><span class="line">    &quot;&quot;&quot;使用给定数据创建一个新的PNG文件.&quot;&quot;&quot;</span><br><span class="line">    img = Image.frombytes(mode, size, data)</span><br><span class="line">    img.save(filename)</span><br><span class="line"></span><br><span class="line">def encrypt_decrypt_png(buff):</span><br><span class="line">    print(&quot;加/解密 PNG 文件\n&quot;)</span><br><span class="line">    input_path = input(&quot;请输入原始 PNG 文件路径：&quot;)</span><br><span class="line">    output_encrypted_path = input(&quot;请输入加密后保存的 PNG 文件路径：&quot;)</span><br><span class="line">    output_decrypted_path = input(&quot;请输入解密后保存的 PNG 文件路径：&quot;)</span><br><span class="line"></span><br><span class="line">    # 生成密钥</span><br><span class="line">    keys = [os.urandom(32) for _ in range(buff)]</span><br><span class="line"></span><br><span class="line">    # 读取原始PNG文件</span><br><span class="line">    original_data = read_png_file(input_path)</span><br><span class="line">    img = Image.open(input_path)</span><br><span class="line">    mode, size = img.mode, img.size</span><br><span class="line"></span><br><span class="line">    # 加密</span><br><span class="line">    encrypted_data = encrypt(original_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Encrypted-------------\n&quot;, encrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入加密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_encrypted_path, encrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">    # 解密</span><br><span class="line">    decrypted_data = decrypt(encrypted_data, keys, buff)</span><br><span class="line">    print(&quot;--------------Decrypted--------------\n&quot;, decrypted_data)</span><br><span class="line"></span><br><span class="line">    # 写入解密后的数据到一个新的PNG文件</span><br><span class="line">    write_png_file(output_decrypted_path, decrypted_data, mode, size)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    print(&quot;这是一个 AES 多重加密算法，目前支持加密 WAV, PNG 格式的文件：&quot;)</span><br><span class="line">    while True:</span><br><span class="line">        # 请求用户输入</span><br><span class="line">        input_string = input(&quot;请输入您需要的AES加密层数（20以下的正整数）：&quot;)</span><br><span class="line">        </span><br><span class="line">        try:</span><br><span class="line">            # 尝试将输入转换为整数</span><br><span class="line">            buff = int(input_string)</span><br><span class="line">            </span><br><span class="line">            # 检查是否是20以下的正整数</span><br><span class="line">            if 1 &lt;= buff &lt;= 20:</span><br><span class="line">                break</span><br><span class="line">            else:</span><br><span class="line">                print(&quot;输入错误：请输入一个20以下的正整数。&quot;)</span><br><span class="line">        </span><br><span class="line">        except ValueError:</span><br><span class="line">            # 处理无法转换为整数的情况</span><br><span class="line">            print(&quot;输入错误：请输入一个有效的整数。&quot;)</span><br><span class="line">        </span><br><span class="line">    print(&quot;你可以有三种选择：&quot;)</span><br><span class="line">    print(&quot;1. 加/解密 .wav 文件；&quot;)</span><br><span class="line">    print(&quot;2. 加/解密 .mp3 文件；&quot;)</span><br><span class="line">    print(&quot;3. 加/解密 .png 文件。&quot;)</span><br><span class="line">    choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    while ((choice != &#x27;1&#x27;) &amp; (choice != &#x27;2&#x27;) &amp; (choice != &#x27;3&#x27;)):</span><br><span class="line">        print(&quot;无效的输入，请按要求输入!&quot;)</span><br><span class="line">        choice = input(&quot;请输入您的选择：&quot;)</span><br><span class="line">    if choice == &#x27;1&#x27;:</span><br><span class="line">        encrypt_decrypt_wav(buff)</span><br><span class="line">    elif choice == &#x27;2&#x27;:</span><br><span class="line">        encrypt_decrypt_mp3(buff)</span><br><span class="line">    elif choice == &#x27;3&#x27;:</span><br><span class="line">        encrypt_decrypt_png(buff)</span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()  </span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>.mp3</code> 格式由于 python 在 <code>ffmpeg</code> 库存在比较重大缺漏，解决起来较为复杂，且其它可以直接处理 <code>.mp3</code> 格式的库较少，所以没有给出具体方案，如果解决期待您的回复！</p>
+<h2 id="AES-算法实现与解析"><a href="#AES-算法实现与解析" class="headerlink" title="AES 算法实现与解析"></a>AES 算法实现与解析</h2><p>以下提供一个简化的AES算法实现流程，以供初步分析</p>
+<h3 id="密钥扩展"><a href="#密钥扩展" class="headerlink" title="密钥扩展"></a>密钥扩展</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def key_expansion(key):</span><br><span class="line">    # AES-128使用的完整S-box</span><br><span class="line">    s_box = [</span><br><span class="line">    0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,</span><br><span class="line">    0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,</span><br><span class="line">    0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,</span><br><span class="line">    0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75,</span><br><span class="line">    0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84,</span><br><span class="line">    0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,</span><br><span class="line">    0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8,</span><br><span class="line">    0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2,</span><br><span class="line">    0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,</span><br><span class="line">    0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb,</span><br><span class="line">    0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79,</span><br><span class="line">    0xe7, 0xc8, 0x37, 0xc1, 0x1d, 0xd5, 0x8e, 0x9e, 0x4e, 0x4b, 0xa1, 0x89, 0xd9, 0x8d, 0xfa, 0xbf, 0xea, 0xea,</span><br><span class="line">    0x11, 0xba, 0x4f, 0x24, 0xa1, 0x70, 0x6a, 0x00, 0x4e, 0x70, 0x3e, 0xd9, 0xfc, 0xdc, 0x4c, 0x20</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"> # 轮常数Rcon</span><br><span class="line">rcon = [</span><br><span class="line">    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">def key_expansion(key):</span><br><span class="line">    key_size = len(key)</span><br><span class="line">    key_symbols = key_size // 4</span><br><span class="line">    rounds = 10 if key_size == 16 else (12 if key_size == 24 else 14)</span><br><span class="line">    expanded_key = [0] * (4 * (rounds + 1) * 4)</span><br><span class="line">    expanded_key[:key_size] = list(key)</span><br><span class="line"></span><br><span class="line">    # 用于扩展的临时变量</span><br><span class="line">    temp = [0] * 4</span><br><span class="line"></span><br><span class="line">    # 开始扩展</span><br><span class="line">    i = key_symbols</span><br><span class="line">    while i &lt; 4 * (rounds + 1):</span><br><span class="line">        for t in range(4):</span><br><span class="line">            temp[t] = expanded_key[(i - 1) * 4 + t]</span><br><span class="line"></span><br><span class="line">        if i % key_symbols == 0:</span><br><span class="line">            # 旋转</span><br><span class="line">            temp = temp[1:] + temp[:1]</span><br><span class="line">            # S-box substitution</span><br><span class="line">            temp = [Sbox[b] for b in temp]</span><br><span class="line">            # Rcon</span><br><span class="line">            temp[0] ^= Rcon[i // key_symbols - 1]</span><br><span class="line">        </span><br><span class="line">        for t in range(4):</span><br><span class="line">            expanded_key[i * 4 + t] = expanded_key[(i - key_symbols) * 4 + t] ^ temp[t]</span><br><span class="line">        i += 1</span><br><span class="line"></span><br><span class="line">    return expanded_key</span><br><span class="line">    </span><br><span class="line">key = b&#x27;\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c&#x27;  # 16字节密钥</span><br><span class="line">expanded_key = key_expansion(key)</span><br><span class="line">print(expanded_key)</span><br></pre></td></tr></table></figure>
+
+<h3 id="轮密钥加"><a href="#轮密钥加" class="headerlink" title="轮密钥加"></a>轮密钥加</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># python</span><br><span class="line"></span><br><span class="line">def add_round_key(state, round_key):</span><br><span class="line">    &quot;&quot;&quot;将轮密钥添加到状态数组中&quot;&quot;&quot;</span><br><span class="line">    new_state = [[0] * 4 for _ in range(4)]</span><br><span class="line">    for r in range(4):</span><br><span class="line">        for c in range(4):</span><br><span class="line">            new_state[r][c] = state[r][c] ^ round_key[r][c]</span><br><span class="line">    return new_state</span><br><span class="line"></span><br><span class="line"># 示例的状态数组和轮密钥（仅为示例，通常由密钥扩展生成）</span><br><span class="line">state = [</span><br><span class="line">    [0x32, 0x88, 0x31, 0xe0],</span><br><span class="line">    [0x43, 0x5a, 0x31, 0x37],</span><br><span class="line">    [0xf6, 0x30, 0x98, 0x07],</span><br><span class="line">    [0xa8, 0x8d, 0xa2, 0x34]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">round_key = [</span><br><span class="line">    [0x2b, 0x28, 0xab, 0x09],</span><br><span class="line">    [0x7e, 0xae, 0xf7, 0xcf],</span><br><span class="line">    [0x15, 0xd2, 0x15, 0x4f],</span><br><span class="line">    [0x16, 0xa6, 0x88, 0x3c]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"># 应用轮密钥加</span><br><span class="line">new_state = add_round_key(state, round_key)</span><br><span class="line">print(&quot;新的状态数组：&quot;)</span><br><span class="line">for row in new_state:</span><br><span class="line">    print(&quot; &quot;.join(f&quot;&#123;x:02x&#125;&quot; for x in row))</span><br></pre></td></tr></table></figure>
+
+<p><code>[s ^ k for s, k in zip(state, round_key)]</code>：state 和 round_key 是包含16个字节的列表。zip(state, round_key) 将这两个列表的相应元素配对，形成16个元组，每个元组包含来自两个列表的对应元素。列表推导式遍历这些元组，对每一对字节（即每个元组中的 s 和 k）执行按位异或操作，生成一个新的列表。</p>
+<h2 id="AES-加密与解密的区别："><a href="#AES-加密与解密的区别：" class="headerlink" title="AES 加密与解密的区别："></a>AES 加密与解密的区别：</h2><p>主要涉及操作的逆向应用</p>
+<p>​	  <strong>加密过程:</strong></p>
+<p>​	· 字节替换（SubBytes）：每个字节通过查S盒实现非线性替换。<br>​	· 行移位（ShiftRows）：行移位操作，第一行不动，每行向左移位增加。<br>​	· 列混合（MixColumns）：对状态矩阵的每一列应用一个线性变换，增加扩散性（最后一轮除外）。<br>​	· 轮密钥加（AddRoundKey）：每一轮的状态与轮密钥进行异或操作。</p>
+<p>​	    <strong>解密过程:</strong></p>
+<p>​	· 逆向字节替换（InvSubBytes）：使用逆S盒替换每个字节。<br>​	· 逆向行移位（InvShiftRows）：与加密中的行移位相反，第一行不动，每行向右移位增加。<br>​	· 逆向列混合（InvMixColumns）：应用列混合的逆变换。<br>​	· 轮密钥加（AddRoundKey）：同加密过程。</p>
+<ol start="2">
+<li>密钥调度<br>在AES中，加密和解密都使用相同的主密钥生成一系列轮密钥，但是应用的顺序不同：</li>
+</ol>
+<p>​	· 加密：按顺序使用生成的轮密钥。<br>​	· 解密：轮密钥的使用顺序是逆向的，即最后一个轮密钥先用，之后倒序使用其他轮密钥。</p>
+<ol start="3">
+<li>性能考虑<br>解密过程使用的是加密步骤的逆操作，特别是在实现InvMixColumns时，解密过程可能会比加密稍微复杂或低效。</li>
+</ol>
+<h2 id="对称加密算法的实现"><a href="#对称加密算法的实现" class="headerlink" title="对称加密算法的实现"></a>对称加密算法的实现</h2><h3 id="加密和解密流程"><a href="#加密和解密流程" class="headerlink" title="加密和解密流程"></a>加密和解密流程</h3><h4 id="1-密钥和IV的生成"><a href="#1-密钥和IV的生成" class="headerlink" title="1. 密钥和IV的生成"></a>1. <strong>密钥和IV的生成</strong></h4><ul>
+<li><strong>密钥生成</strong>：通过<code>os.urandom(32)</code>生成32字节（256位）的随机密钥。对于每一层加密，都生成一个新的密钥。</li>
+<li><strong>IV生成</strong>：通过<code>os.urandom(16)</code>生成16字节（128位）的随机初始向量（IV）。同样，对于每一层加密，都生成一个新的IV。</li>
+</ul>
+<h4 id="2-加密过程"><a href="#2-加密过程" class="headerlink" title="2. 加密过程"></a>2. <strong>加密过程</strong></h4><ul>
+<li><strong>逐层加密</strong>：加密过程中，使用AES算法和CBC模式（Cipher Block Chaining）。数据首先进行填充（PKCS7 padding），以确保数据长度是块大小（128位）的倍数。然后，使用生成的密钥和IV进行加密。每一层加密都会更新数据。</li>
+<li><strong>IV的存储</strong>：最终加密的数据包含所有的IV和加密后的数据。IV是解密所需的，因此在加密数据的前面存储所有的IV。</li>
+</ul>
+<h4 id="3-解密过程"><a href="#3-解密过程" class="headerlink" title="3. 解密过程"></a>3. <strong>解密过程</strong></h4><ul>
+<li><strong>IV的提取</strong>：解密前，先从加密数据中提取出所有的IV。</li>
+<li><strong>逐层解密</strong>：解密过程中，从最后一层开始逐层解密。使用AES算法和CBC模式，结合相应的密钥和IV。解密后，数据进行去填充（PKCS7 unpadding）以还原原始数据。</li>
+</ul>
+<h3 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h3><ul>
+<li><strong>WAV文件</strong>：通过<code>wave</code>模块读取和写入WAV文件的音频数据。<code>read_wav_file</code>读取音频数据，<code>write_wav_file</code>写入音频数据。</li>
+<li><strong>PNG文件</strong>：通过<code>PIL</code>（Python Imaging Library）模块读取和写入PNG文件的图像数据。<code>read_png_file</code>读取图像数据，<code>write_png_file</code>写入图像数据。</li>
+<li><strong>MP4文件</strong>：通过<code>ffmpeg</code>库读取和写入MP4文件的视频数据。<code>read_video</code>读取视频数据，<code>write_video</code>写入视频数据。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/05/21/%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" data-id="cmmu7h3q60005a0cfa7spe73f" data-title="应用密码学设计（照搬并分析设计√）AES对称加密算法" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-Cpt3_Web" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/05/21/Cpt3_Web/" class="article-date">
+  <time class="dt-published" datetime="2024-05-21T02:23:19.344Z" itemprop="datePublished">2024-05-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-    <a style="--stagger:5" href="2024/05/21/Cpt3_Web/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          计算机三级网络技术个人错题（部分）归档
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/05/21/Cpt3_Web/">计算机三级网络技术个人错题（部分）归档</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          5月 21
-          ·
-          18 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>本文档适合考前随机抽取复习，由于导出 md 格式问题导致其中彩色字体消失，但是重点后来已被加粗，尽管可能不完全精确，但应该也可以一用。</p>
+<hr>
+<ol>
+<li>集线器不具备交换机所具有的<strong>MAC</strong>地址表，把数据包发送到与集线器相连的<strong>所有节点</strong>；集线器发送数据时执行CSMA&#x2F;CD介质访问控制方法；集线器中所有的节点属于一个冲突域，通过在网络链路中串接一个集线器可以监听该链路中的数据包</li>
+<li>适配器具有转换不同数据速率的功能</li>
+<li>ISL属于Cisco公司内部交换链路协议；IEEE 802.1Q协议主要作用是能使不同厂家的交换设备互连在一起</li>
+</ol>
+<p><strong>虚拟网络技术（VLAN）</strong>提供了动态组织工作环境的功能，它简化了网络的物理结构，提高了网络的易管理性和安全性，提高了网络的性能。</p>
+<ol>
+<li>BlockboneFast提高了在间接链路失效情况下的收敛速度。</li>
+<li>BPDU Filter (Bridge Protocol Data Unit，网桥协议数据单元）会使交换机在指定的端口上停止发送BPDUs，对于进入这个端口的BPDUs也不做任何处理，同时立刻将端口状态转换为转发状态</li>
+<li>UplinkFast功能是当生成树拓扑结构发生变化和在使用上连链路组（uplink group）的冗余链路之间完成负载平衡时，提供快速收敛。当链路失效时，UplinkFast将交换机上处于阻塞（blocking）状态的端口跳过侦听（listing）和学习（Learing）两种状态，直接转换到转发（forward）状态，这个过程大约需要1~5分钟。这种功能有利于直接链路失效后的处理。</li>
+</ol>
+<p>VLAN的ID数值范围为<strong>1~4049</strong>，其中<strong>1是缺省</strong>的VLAN,一般用于设备管理，且用户只能使用不能删除。</p>
+<p>路由器在转发数据包时，会选择路由信息源是<strong>直接路由（connected）</strong>的路径转发数据包</p>
+<p>应该先执行拒绝语句然后再执行允许语句。’ip’应该放在permit后面。”host any”中语句错误，应该是any host</p>
+<p>配置地址池的语法：在全局配置模式下(config)#： <strong>ip dhcp pool 地址池名称</strong>。然后在DHCP Pool配置模式下（dhcp-config）#：<strong>network 网络地址 子网掩码</strong>。<br>配置不用于动态分配的IP地址（又称为除外地址）语法是：<br>在全局配置模式下(config)#：<strong>ip dhcp excluded-address low-address  [high-address]</strong>。 （high-sdress可选）<br>配置IP地址池缺省网关：在DHCP Pool配置模式下（dhcp-config）#<strong>default-router address [address2…address8]</strong><br>配置IP地址池的域名系统：在DHCP Pool配置模式下（dhcp-config）#<strong>domain-name <name></strong><br>配置IP地址池的域名服务器的IP地址：在DHCP Pool配置模式下（dhcp-config）#<strong>dns-server address 服务器地址</strong></p>
+<p>用IEEE 802.11b对等解决方案将<strong>4台计算机连成一个无线局域网</strong>，要求在保持对等解决方案不变的情况下，将无线局域网与有线局域网相连，正确的解决方法是（）<strong>在其中一台计算机上再安装一块以太网网卡</strong>  </p>
+<p>一个家庭要将分布在不同房间的三台计算机连网，ISP只提供一个有线网接口，并只分配一个IP地址。在这种情况下，要建立一个能够访问Internet的家庭无线局域网应选用的无线设备是（）。<strong>无线路由器</strong></p>
+<p>在快速配置页面的**”Broadcast SSID in Beacon”<strong>选项中，选用</strong>“yes”**，表示设备必须指定SSID访问接入点 X，yes代表默认不指定SSID</p>
+<p><strong>DNS正向搜索</strong>的功能是将<strong>域名解析为IP地址</strong>，Windows系统中可测试该功能的命令是（）<strong>nslookup</strong>（命令用于对DNS服务器进行测试</p>
+<p><strong>CMIP</strong> （Common Management Information Protocol，通用管理信息协议）主要解决不同厂商、不同机种的网络之间互通而创建的开放系统互联网络管理协议。<strong>不属于电子邮件系统协议</strong></p>
+<p>在<strong>IIS 6.0</strong>中用虚拟服务器构建多个网站时，<strong>不能</strong>使用的方法是（）。用不同的传输层协议</p>
+<p>DNS服务器资源记录的是（）。A) 主机资源记录B) 别名记录C) 邮件交换器记录    <strong>不包括 FTP服务器记录</strong></p>
+<p>Cisco PIX 525防火墙有四种基本模式：<strong>非特权模式，特权模式，配置模式，监视模式</strong>。<br><strong>①非特权模式</strong>：开机自检后就处于这种模式，提示符pixfirewall&gt;。<br><strong>②特权模式</strong>：非特权模式中输入enable进入特权模式，该模式可以更改当前配置，提示符为pixfirewall#。<br><strong>③配置模式</strong>：在特权模式中输入configure terminal进入配置模式，绝大部分的系统配置都是在配置模式下进行，提示符为pixfirewall（config）#。<br><strong>④监视模式</strong>：pix防火墙在开机或者重新启动过程中，按下Escape键或者发送一个break字符，进入监视模式。该模式下可以进行系统映像更新、口令回复等操作，提示符为monitor&gt;。</p>
+<p>下列入侵检测系统结构中，能够避免<strong>单点故障</strong>的是（）。A) 集中式B) 层次式C) 协作式<strong>D) 对等式</strong></p>
+<p>下列关于<strong>RAID</strong>的描述中，<strong>错误</strong>的是（）。 <strong>服务器需要外加一个RAID卡才能实现RAID功能</strong></p>
+<p>NIPS（Network-based Intrusion Prevention System，基于网络的入侵防护系统）整合了防火墙技术和入侵检测技术，采用In-line工作模式。一般布置在网络出口处，串联于防火墙与路由器之间，网络进出的数据流都必须通过它，从而保护整个网络的安全。因为网络误报（漏报）将导致合法的通信被阻断，导致拒接服务，而性能不足会带来合法通信的延迟，甚至成为网络的瓶颈。选项A指出的是”漏报”，</p>
+<p>能够显示主机上活动<strong>TCP连接状态的DOS命令</strong>是（）。<strong>netstat</strong></p>
+<p>当IP包头中<strong>TTL值减为0</strong>时，路由器发出的ICMP报文类型为（）<strong>。超时（跳跃过多）</strong></p>
+<p>在某Cisco路由器上使用命令”snmp-server host 202.113.77.5 system”进行SNMP设置，如果在管理站202.113.77.5上能够正常接收来自该路由器的通知，那么下列描述中错误的是（）。<strong>路由器向管理站按照团体字public发送通知（默认为自陷通知）</strong></p>
+<p>下列软件中<strong>不能用于网络嗅探</strong>的是（）。<strong>MRTG</strong></p>
+<p>下列关于接入技术特征的描述中，错误的是（）。<strong>A) 远距离无线宽带接入网采用802.15标准</strong>  B) Cable Modem利用频分复用的方法，将信道分为上行信道和下行信道  C) 光纤传输系统的中继距离可达100km以上  D) ADSL技术具有非对称带宽特性</p>
+<p>交换机根据进入端口数据帧中的MAC地址</p>
+<p>802.16a用于移动结点接入 ×</p>
+<p>服务器系统年停机时间为<strong>8.5小时</strong> <strong>99.9%</strong></p>
+<p>采用RAID技术可提高磁盘容错能力 ×</p>
+<p>直接链路失效时，STP若将交换机C的阻塞端口从阻塞状态直接转换为转发状态，<strong>提高转换时的收敛速度</strong>，需配置的STP可选功能是<strong>UplinkFast</strong></p>
+<p>当交换机到根网桥的间接链路出现失效故障时（如图，链路L1失效），STP协议会将交换机C的阻塞端口的工作状态转换为转发状态，为了<strong>省去端口状态转换等待时间</strong>，让端口直接由侦听和学习状态转换为转发状态，需配置交换机 STP的可选功能是（）。<strong>BackBoneFast</strong></p>
+<p>Cisco路由器中的路由表包含多种路由信息源时，根据缺省的管理距离值，路由器在转发数据包时，会选择的路由信息源是 <strong>IGRP ~路由缺省的管理距离值是100</strong>，IS-IS路由缺省的管理距离值是115，OSPF路由缺省的管理距离值是110，RIP路由缺省的管理距离值是120。因为管理距离的值越小，路由信息源的可信度越高。故选A选项。~</p>
+<p>在Cisco路由器上主要用于<strong>存储当前使用的操作系统映像文件和微代码</strong>的存储器是 <strong>Flash</strong></p>
+<p><strong>HiperLAN&#x2F;2网络</strong>，在一个小区的覆盖范围是室内为30米，室外为150米。(A) HiperLAN&#x2F;2采用OFDM调制技术(B) 在HiperLAN&#x2F;2网络中数据的传输是面向连接的(C) HiperLAN&#x2F;2采用5G射频频率，上行速率可以达到54Mbps</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">无线标准           802.11a          802.11b           802.11g   </span><br><span class="line">工作频段            5GHz             2.4GHz            2.4GHz   </span><br><span class="line">最大传输速率       54Mbit/s         11Mbit/s          54Mbit/s   </span><br><span class="line">吞吐量           28~31Mbit/s       5~7Mbit/s         28~31Mbit/s </span><br></pre></td></tr></table></figure>
+
+<p>下列对配置Aironet 1100无线接入点的描述中，错误的是（  ）。</p>
+<p>A) 使用5类UTP电缆将PC机连接到无线接入点</p>
+<p><strong>B) 无线接入点加电后，PC机可获得192.168.0.x的IP地址</strong></p>
+<p>C) 第一次配置无线接入点，一般采用本地配置方式，这时它的默认地址是10.0.0.1</p>
+<p>D) 打开浏览器IE，并在地址栏输入无线接入点的IP地址，会出现输入网络密码对话框</p>
+<p>在<strong>DHCP服务器中新建保留</strong>时需要输入保留名称、IP地址、MAC地址、描述和支持类型等选项。</p>
+<p>一网站创建时，输入的网站IP地址为192.168.1.1，网站的TCP端口为8080，网站的主机头为<a target="_blank" rel="noopener" href="http://www.example.com.访问该网站时,在浏览器的地址栏中输入的可以是(/">www.example.com。访问该网站时，在浏览器的地址栏中输入的可以是（</a>  ）。<br>Ⅰ. <a target="_blank" rel="noopener" href="http://www.example.com/">www.example.com</a> Ⅱ. 192.168.1.1 <strong>Ⅲ. <a target="_blank" rel="noopener" href="http://192.168.1.1:8080/">http://192.168.1.1:8080</a></strong></p>
+<p><strong>Serv_U FTP</strong>服务器 用户不能注册 邮件服务器 用户可以注册</p>
+<p>Cisco PIX 525防火墙能够进行操作系统映象更新、口令恢复等操作的模式是（  ）。<strong>监视模式</strong></p>
+<p>RAID10是RAID0和RAID1的组合</p>
+<p>DOS命令<strong>（有关tracert to ···） - pathping</strong></p>
+<p>ICMP报文类型字段值表示意义：<br>数值 意义 数值 意义 <br>0 响应应答（ECHO-REPLY） <strong>3 不可到达</strong> <br>4 源抑制 <strong>5 重定向</strong> <br>8 响应请求（ECHO-REQUEST） 11 超时 <br>12 参数失灵 13 时间戳请求 <br>14 时间戳应答 17 地址掩码请求 <br>18 地址掩码应答 </p>
+<p>管理站59.67.148.5使用TCP的<strong>162</strong>端口接收通知 <strong>×</strong></p>
+<p>Router-R3(config-if)#ip address 192.167.78.6【49】  配置<strong>loopback</strong>接口，其掩码应为<strong>255.255.255.255</strong></p>
+<p>本机所配置的DNS服务器地址是第一个Query（C）的 destination（D）</p>
+<p>下列关于局域网设备的描述中，错误的是（）。</p>
+<p>A) 中继器只能起到对传输介质上信号波形的接收、放大、整形与转发的作用</p>
+<p>B) 连接到一个集线器的所有结点共享一个冲突域</p>
+<p>C) 透明网桥一般用在两个MAC层协议相同的网段之间的互联</p>
+<p><strong>D) 二层交换机维护一个表示MAC地址与IP地址对应关系的交换表</strong></p>
+<p>下列对交换机中交换表的描述中，错误的是（）。</p>
+<p>A) 在一些高端交换机中，交换表通常被保存在CAM存储器中</p>
+<p>B) 交换表中没有接收帧的目的MAC地址时，交换机用Flood技术转发该帧</p>
+<p>C) 使用“show mac-addres-table”命令可显示小型交换机的交换表内容</p>
+<p><strong>D) 交换表的内容包括目的IP地址及其所对应的交换机端口号</strong></p>
+<p>下列对STP生成树结构的描述中，错误的是（）。</p>
+<p>A) STP无论是根的确定，还是树状结构的生成，主要依靠BPDU提供的信息</p>
+<p>B) 在配置BPDU的Bridge ID中，优先级的取值范围是0～61440</p>
+<p>C) 拓扑变化通知BPDU数据包的长度不超过4个字节</p>
+<p><strong>D) 配置BPDU数据包的长度小于等于32个字节(35)</strong></p>
+<p>提高Catalyst-6500发生直接链路失效的收敛速度应使用的STP配置命令是（）。</p>
+<p><strong>A) Switch-6500&gt; （enable）set spantree uplinkfast enable</strong></p>
+<p>B) Switch-6500&gt; （enable）set spantree portfast 3&#x2F;2 enable</p>
+<p>C) Switch-6500&gt; （enable）set spantree backbonefast enable</p>
+<p>D) Switch-6500&gt;（enable）set spantree portfast bpdu-filter enable</p>
+<p>下列选项中，不会出现在Cisco路由器路由表中的是（）。S*</p>
+<p>下列关于IEEE 802.11三种协议的描述中，错误的是（）。</p>
+<p>A) IEEE 802.11a的实际吞吐量是28～31Mbps</p>
+<p>B) IEEE 802.11a的最大容量是432Mbps</p>
+<p><strong>C) IEEE 802.11b的最大容量是88Mbps(更小)</strong></p>
+<p>D) IEEE 802.11g的最大容量是162Mbps</p>
+<p>下列关于无线局域网设备的描述中，错误的是（）。</p>
+<p>A) 无线接入点AP负责频段管理和漫游等工作</p>
+<p><strong>B) 无线接入点实现CSMA&#x2F;CD介质访问控制算法</strong></p>
+<p>C) 无线网桥用于连接多个网段</p>
+<p>D) 无线路由器一般都具有路由与NAT功能</p>
+<p>下列关于Cisco Aironet 1100无线接入点设备及其配置的描述中，错误的是（）。</p>
+<p>A) 工作在2.4GHz频段</p>
+<p>B) 第一次配置使用的默认IP地址是10.0.0.1(X)</p>
+<p><strong>C) 与以太网连接时使用RS-232-C接口标准</strong></p>
+<p>D) 使用Cisco的IOS操作系统</p>
+<p>一个作用域可负责多个网段IP地址的分配（作用域不负责IP分配）</p>
+<p>Web站点的<strong>性能选项</strong>包括带宽限制属性和客户端连接时间限制属性（X，<strong>数量限制</strong>）</p>
+<p>Cisco PIX525防火墙用于实现内部和<strong>外部地址固定映射</strong>的配置命令是（）。A) <strong>static</strong></p>
+<p>下列关于入侵检测系统探测器获取网络流量的方法中，错误的是（）。</p>
+<p>A) 利用交换设备的镜像功能</p>
+<p><strong>B) 在网络链路中串接一台交换机（单项攻击）</strong></p>
+<p>C) 在网络链路中串接一台集线器</p>
+<p>D) 在网络链路中串接一台分路器</p>
+<p>在下面的攻击手段中，基于网络的入侵防护系统可以阻断的是（）。<strong>Smurf攻击</strong>（熟悉的都不能阻断）</p>
+<p>下列关于SNMP操作的描述中，正确的是（）。<strong>D) 代理使用Inform方式执行Notification操作时需要收到管理站发出的一条确认消息</strong></p>
+<p>下列关于漏洞扫描技术和工具的描述中，正确的是（）。<strong>B) CVE为每个漏洞确定了唯一的名称和标准化的描述</strong></p>
+<p>在一台主机上用浏览器无法访问到域名为<a href="http://www.online.tj.cn的网站，并且在这台主机上执行tracert命令时有如下信息：">www.online.tj.cn的网站，并且在这台主机上执行tracert命令时有如下信息：</a></p>
+<p>分析以上信息，会造成这种现象的原因是（）。<strong>B) 相关路由器上进行了访问控制</strong></p>
+<p>距离不同，ADSL的上行速率也不同，其中距离5.5Km，ADSL上行速率64Kbps，下行速率1.5Mbps，距离3.6公里，ADSL上行速率是640Kbps，下行速率6Mbps。即为64K-640K</p>
+<p>下列关于服务器技术的描述中，正确的是（）。</p>
+<p><strong>A) 服务器磁盘性能表现在磁盘存储容量与I&#x2F;O速度</strong></p>
+<p>B) 集群系统中一台主机出现故障时不会影响系统性能</p>
+<p>C) 采用RISC结构处理器的服务器操作系统通常采用Android系统（Unix）</p>
+<p>D) 热插拔功能允许用户在不切断电源的情况下，更换硬盘、主背板等</p>
+<p>下列关于高端路由器的可靠性与可用性指标的描述中，错误的是（）。2*50 </p>
+<p>A) 无故障连续工作时间大于10万个小时</p>
+<p>B) 系统故障恢复时间小于30分钟</p>
+<p>C) 系统具有自动保护切换功能，主备切换时间小于50毫秒</p>
+<p><strong>D) SDH和ATM接口具有自动保护切换功能，切换时间小于100毫秒</strong></p>
+<p>IPv6地址长度是128位，前缀为48位，所以可分配的地址长度为80位，所以最多有2^80个可分配给主机的地址数。</p>
+<p>路由信息协议是一种基于<strong>距离向量</strong>的路由选择协议</p>
+<p><strong>VLAN name</strong>用<strong>32</strong>个字符表示，可以是字母和数字。在建立一个VLAN时，需要给定一个名字，如果没有名字，系统则按缺省的VLAN名（VLAN00xxx）建立VLAN，所以应该是VLAN00223</p>
+<p>在<strong>VLAN ID</strong>标准范围内可用于Ethernet的VLAN ID为<strong>1-1000</strong>（不是1005）</p>
+<p>以下不属于网桥协议数据单元BPDU携带的实现生成树算法的信息是（）。</p>
+<p>A) Root ID</p>
+<p>B) Root Path Cost</p>
+<p><strong>C) Root MAC Address</strong></p>
+<p>D) )Hello time</p>
+<p>Router-R3(config-router)#network【47】area 0<br>Router-R3(config-router)#default-information originate always<br>Router-R3(config-router)#area 0【48】.  <br>都为阴影区内聚合地址，后一部分一反一正而已</p>
+<p><strong>编号 源IP地址 目的IP地址 报文摘要</strong><br><strong>1  【51】 255.255.255.255 DHCP:Request,Type:DHCP discover</strong><br><strong>2 10.3.4.1 255.255.255.255 DHCP:Reply, Type:DHCP offer</strong><br><strong>3 0.0.0.0    【52】        DHCP:Request, Type:DHCP request</strong><br><strong>4  【53】  【54】 DHCP:Reply, Type:DHCP ack</strong></p>
+<p>答案：<br>第【51】题：由报文摘要“DHCP:Request,Type:DHCP discover”知，该行是DHCP客户机广播“DHCP发现（HCP discover）”消息，试图找到网络中的DHCP服务器，以便从DHCP服务器获得一个IP地址。由于DHCP客户机还没配置IP地址，它只能用广播方式发送该消息，并且源IP地址设置为：0.0.0.0。故【51】处应填：0.0.0.0。<br>第【52】题：由报文摘要“DHCP:Request, Type:DHCP request”知该行是向DHCP服务器请求提供IP地址。该阶段，客户机主要通过广播发出请求。故【52】处应填：255.255.255.255。<br>第【53】题：由报文摘要“DHCP:Reply, Type:DHCP ack”知，DHCP服务器广播“DHCP确认（DHCP ack）”消息，将IP地址分配给DHCP客户机，它和第二行“10.3.4.1（源地址） 255.255.255.255（目的地址） DHCP:Reply, Type:DHCP offer”相对应。故【53】处应填：10.3.4.1。<br>第【54】题：DHCP服务器是采用广播地址发送确认信息的，故【54】应填入：255.255.255.255。</p>
+<p><strong>硬件地址长度是48位，6个字节。</strong></p>
+<p>1 ICMP（tracert)</p>
+<p>发出<strong>tracert</strong>命令的源地址(在DNS查询第一个数据包源处取）</p>
+<p><strong>Cable Modem</strong>把用户<strong>计算机</strong>与<strong>有线电视同轴电缆</strong>连接起来(不是光缆与电缆）</p>
+<p>路由器的可用性用<strong>MTBF</strong>，服务器不是（MTBF&#x2F;MTBF+MTBR）</p>
+<p><strong>高端路由器</strong>可靠性与可用性指标：无故障连续工作时间大于<strong>10万小时</strong></p>
+<p>spanning-tree uplinkfast max-update-rate 32000</p>
+<p>Catalyst 6500交换机<strong>set time ［day_of_week］［mm&#x2F;dd&#x2F;yy］［hh:mm:ss］</strong>，</p>
+<p>Catalyst650的格式是:**set port speed &lt;mod&#x2F;port&gt;  <portspeed> (10,100,1000)**，其中速度的单位是Mbps，故选项D正确。3&#x2F;1-24</p>
+<p>log出现为反掩码，都在后方</p>
+<p>下列关于无线网络HiperLAN&#x2F;2协议的描述中，错误的是（）。</p>
+<p>A) 采用5GHz工作频段</p>
+<p>B) 上行速率最多可达54Mbps</p>
+<p><strong>C) 室外最大覆盖范围为30米（室内一般为30m，室外一般为150m）</strong></p>
+<p>D) 可支持面向连接的传输服务</p>
+<p>下列对IEEE802.11协议的描述中，错误的是（）。 物理层采用<strong>FSK</strong>调制方式</p>
+<p>下列安全设备中，不能部署在网络出口的是（）。 <strong>网络版防病毒</strong></p>
+<p>B) ISS的Internet Scanner通过依附于主机上的扫描器代理侦测<strong>主机内部</strong>的漏洞 × <strong>System Scanner</strong></p>
+<p><strong>ACK</strong></p>
+<p><strong>ftp</strong> 端口 <strong>21</strong></p>
+<p>如果需要监听路由器RF和RG之间的所有流量，可以在该链路中串入一种设备 <strong>TAP</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/05/21/Cpt3_Web/" data-id="cmmu7h3q60006a0cf8yu816kz" data-title="计算机三级网络技术个人错题（部分）归档" class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+    <article id="post-first_attemp" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="2024/05/21/first_attemp/" class="article-date">
+  <time class="dt-published" datetime="2024-05-21T01:57:32.206Z" itemprop="datePublished">2024-05-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
     
     
-    <a style="--stagger:6" href="2024/05/21/first_attemp/" data-animate>
-      <header>
-        <h2 class="font-bold text-xl">
-          First blog to document the its establishment.
-        </h2>
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="2024/05/21/first_attemp/">First blog to document the its establishment.</a>
+    </h1>
+  
+
       </header>
-      <section class="text-gray-400 my-2 text-sm time">
-        <p class="line-clamp-4">
-          
-        </p>
-        <p class="line-clamp-4">
-          5月 21
-          ·
-          1 min
-        </p>
-      </section>
-    </a>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>第一次pull文件到自己的库中，能不能成功呢···</p>
+<p>好想做一个自己的 blog ，今天试试吧，先使用 hexo 初始化静态网站</p>
+<h3 id="——成功了！操作流程："><a href="#——成功了！操作流程：" class="headerlink" title="——成功了！操作流程："></a>——成功了！操作流程：</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin  git@github.com:MecoloSa/MecoloSa.github.io.git</span><br></pre></td></tr></table></figure>
+
+<p>之后查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git remote -v</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (fetch)</span><br><span class="line">origin  https://github.com/MecoloSa/MecoloSa.github.io.git (push)</span><br></pre></td></tr></table></figure>
+
+<p>将 readme.md 放在文件夹后，执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>即可</p>
+<h3 id="出现问题：修改readme-md后无法提交"><a href="#出现问题：修改readme-md后无法提交" class="headerlink" title="出现问题：修改readme.md后无法提交"></a>出现问题：修改readme.md后无法提交</h3><p>按照GPT-4提示<code>git add -f README.md</code>也没有作用，提示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">nothing to commit, working tree clean</span><br></pre></td></tr></table></figure>
+
+<p>重启git后执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line"></span><br><span class="line">git status # 可以看到更改的信息</span><br><span class="line"># On branch master</span><br><span class="line"># Changes to be committed:</span><br><span class="line">#   (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">#         modified:   readme.md</span><br><span class="line"></span><br><span class="line">git commit -m &quot;Update README.md&quot; # 可以看到上传过程</span><br><span class="line"># [master 225f05e] Update README.md</span><br><span class="line">#  1 file changed, 13 insertions(+), 2 deletions(-)</span><br><span class="line"> </span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="此外，进行了初步博客配置探索"><a href="#此外，进行了初步博客配置探索" class="headerlink" title="此外，进行了初步博客配置探索"></a>此外，进行了初步博客配置探索</h3><p>执行命令为：</p>
+<p><code>C:\Users\PENG\Desktop\Illias_class\blog&gt;hexo server</code></p>
+<p>找到需要上传的md文件，后拉取到source文件夹，重复上述过程即可</p>
+<p>但是，以上操作只能满足本地的静态网站，通过localhost访问，并不能部署到网页上</p>
+<p>之后流程参见下一个 blog</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://mecolosa.github.io/2024/05/21/first_attemp/" data-id="cmmu7h3px0000a0cfg8d2bqo9" data-title="First blog to document the its establishment." class="article-share-link"><span class="fa fa-share">分享</span></a>
+      
+      
+      
+    </footer>
+  </div>
   
+</article>
+
+
+
+  
+
+
 </section>
-
-
-  </main>
-  <footer class="flex flex-col h-40 items-center justify-center text-gray-400 text-sm">
-  <!-- busuanzi -->
+        
+          <aside id="sidebar">
   
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<!-- Busuanzi Analytics -->
-<div class="flex items-center gap-2">
-  <span>Visitors</span>
-  <span id="busuanzi_value_site_uv"></span>
-  <span>Page Views</span>
-  <span id="busuanzi_value_site_pv"></span>
-</div>
-<!-- End Busuanzi Analytics -->
+    
 
+  
+    
 
-  <!-- copyright -->
-  <div class="flex items-center gap-2">
-    <a target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" style="color: inherit;">CC BY-NC-SA 4.0</a>
-    <span>© 2022</span>
-    <iconify-icon width="18" icon="emojione-monotone:maple-leaf" ></iconify-icon>
-    <a href="https://github.com/xbmlz" target="_blank" rel="noopener noreferrer">xbmlz</a>
-  </div>
-  <!-- powered by -->
-  <div class="flex items-center gap-2">
-    <span>Powered by</span>
-    <a href="https://hexo.io/" target="_blank" rel="noopener noreferrer">Hexo</a>
-    <span>&</span>
-    <a href="https://github.com/xbmlz/hexo-theme-maple" target="_blank" rel="noopener noreferrer">Maple</a>
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="archives/2026/03/">三月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="archives/2024/06/">六月 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="archives/2024/05/">五月 2024</a></li></ul>
+    </div>
   </div>
 
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="2026/03/17/Sichuan_Universe/">四川旅游和四川大学</a>
+          </li>
+        
+          <li>
+            <a href="2024/06/09/%E6%B1%87%E7%BC%96%E6%9C%9F%E6%9C%AB/">汇编期末报告</a>
+          </li>
+        
+          <li>
+            <a href="2024/06/06/%E8%AF%81%E6%8D%AE-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%96%E8%AF%81/">证据法学浏览器取证工具报告</a>
+          </li>
+        
+          <li>
+            <a href="2024/05/21/upload_file/">Upload &amp; Restore file to your blog.</a>
+          </li>
+        
+          <li>
+            <a href="2024/05/21/%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">应用密码学设计（照搬并分析设计√）AES对称加密算法</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 Illias<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
 </footer>
 
-  <div class="back-to-top box-border fixed right-6 z-1024 -bottom-20 rounded py-1 px-1 bg-slate-900 opacity-60 text-white cursor-pointer text-center dark:bg-slate-600">
-    <span class="flex justify-center items-center text-sm">
-      <iconify-icon width="18" icon="ion:arrow-up-c" id="go-top"></iconify-icon>
-      <span id="scrollpercent"><span>0</span> %</span>
-    </span>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="index.html" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="js/script.js"></script>
+
+
+
+
+
   </div>
-  
-<script src="js/main.js"></script>
-
-
-  <script>
-    $(document).ready(function () {
-      const mapleCount = "10";
-      const speed = "0.5";
-      const mapleEl = document.getElementById("maple");
-      const maples = Array.from({ length: mapleCount }).map(() => {
-        const maple = document.createElement("div");
-        const scale = Math.random() * 0.5 + 0.5;
-        const offset = Math.random() * 2 - 1;
-        const x = Math.random() * mapleEl.clientWidth;
-        const y = -Math.random() * mapleEl.clientHeight;
-        const duration = 10 / speed;
-        const delay = -duration;
-        maple.className = "maple";
-        maple.style.width = `${24 * scale}px`;
-        maple.style.height = `${24 * scale}px`;
-        maple.style.left = `${x}px`;
-        maple.style.top = `${y}px`;
-        maple.style.setProperty("--maple-fall-offset", offset);
-        maple.style.setProperty("--maple-fall-height", `${Math.abs(y) + mapleEl.clientHeight}px`);
-        maple.style.animation = `fall ${duration}s linear infinite`;
-        maple.style.animationDelay = `${delay}s`;
-        mapleEl.appendChild(maple)
-        return maple
-      })
-    });
-  </script>
-  
-
-
-  <div class="fixed top-0 bottom-0 left-0 right-0 pointer-events-none print:hidden" id="maple"></div>
 </body>
-
 </html>
